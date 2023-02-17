@@ -28,14 +28,16 @@
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	//"forwardPorts": [27017, 3000, 8000],
+	"forwardPorts": [27017, 3000, 8000],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
+	
 	"postCreateCommand": "yarn install",
 	
 	// there will be a prompt if using  
 	//    /usr/local/bin/mongod --dbpath /var/lib/mongo --logpath /var/log/mongodb/mongod.log --fork
-	//"postStartCommand": "/usr/local/bin/mongod -f mongo/mongod.conf",
+	//"postStartCommand": "/usr/local/bin/mongod -f mongodb/mongod.conf",
+	//"postStartCommand": "/usr/local/bin/mongod --dbpath /var/lib/mongo --logpath /var/log/mongodb/mongod.log --fork",
 
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "node"
