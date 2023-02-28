@@ -9,7 +9,7 @@
         "reap": "ps aux | grep nodemon | grep -v grep | awk '{print $2}' | xargs kill -9",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "author": "cais-0316",
+    "author": "nicholas-eliyesil",
     "license": "ISC",
     "dependencies": {
         "body-parser": "^1.20.1",
