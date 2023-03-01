@@ -220,14 +220,21 @@ const Player = (song) => {
   let link = 'http://127.0.0.1:8000/stream/'+song.curSongID
   const [audio, setAudio] = useState(new Audio(link))
   const [initialized, setInitialized] = useState(false)
-  const playNextSong = ()=> {
-    song.next() 
-  }
   if(!initialized && song.songs.length != 0){ //ensures that only one event listener is attached to audio. After all songs are loaded 
     audio.addEventListener("ended", async (event) =>{
       //TODO: figure out why song.next has  App.songs = []
       audio.currentTime = 0
-      playNextSong()
+      song.next()
+    })
+    audio.addEventListener("play", () => {
+      document.getElementById("playpausebutton").setAttribute("src", pausepng)
+      console.log("playing song from " + link)
+      setPlaying(true)
+    })
+    audio.addEventListener("pause", () => {
+      document.getElementById("playpausebutton").setAttribute("src", playpng)
+      console.log("paused song")
+      setPlaying(false)
     })
     setInitialized(true)
   }
@@ -235,15 +242,9 @@ const Player = (song) => {
   audio.volume = 0.5
   const playPause = () =>{
     if(!playing){
-      document.getElementById("playpausebutton").setAttribute("src", pausepng)
-      console.log("playing song from " + link)
       audio.play()
-      setPlaying(true)
     } else {
-      document.getElementById("playpausebutton").setAttribute("src", playpng)
-      console.log("paused song")
       audio.pause()
-      setPlaying(false)
     }
   }
   return (
