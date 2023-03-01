@@ -112,8 +112,8 @@ const Library = (props) => {
   }
   
   if(props.songs.length != 0){ //TODO: figure out how to put this into a seperate function.
-    console.log("\n songs = "+typeof props.songs)
-    console.log(props.songs)
+    // console.log("\n songs = "+typeof props.songs)
+    // console.log(props.songs)
     tableHeaders = <tr><td key="hname">title</td>
                        <td key="hartist">artist</td>
                        <td key="halbum">album</td>
@@ -205,20 +205,26 @@ const Player = (song) => {
     /*TODO: fix occasional error: 
      * Uncaught (in promise) DOMException: The element has no supported sources.
      */
-    console.log("Player.Audio changed to next song.")
+    console.log("Player.Audio changed to next song: "+song.curSongID)
     audio.src = 'http://127.0.0.1:8000/stream/'+song.curSongID
-    if(playing){
-      playPause()
-    }
+    audio.load()
   }, [song.curSongID] );
 
   let link = 'http://127.0.0.1:8000/stream/'+song.curSongID
   const [audio, setAudio] = useState(new Audio(link))
-  audio.addEventListener("ended", function(){
-    audio.currentTime = 0
-    song.next()
+  const [initialized, setInitialized] = useState(false)
+  const playNextSong = ()=> {
+    song.next() 
     playPause()
-  })
+  }
+  if(!initialized){ //ensures that only one event listener is attached to audio. 
+    audio.addEventListener("ended", async (event) =>{
+      //TODO: figure out why song.next has  App.songs = []
+      audio.currentTime = 0
+      playNextSong()
+    })
+    setInitialized(true)
+  }
   const [playing, setPlaying] = useState(false)
   audio.volume = 0.5
   const playPause = () =>{
@@ -250,31 +256,42 @@ const Player = (song) => {
  * @returns The App component
  */
 function App() {
-  //const [curSongID, setCurSongID] = useState("63e510bd6d07ddf3584909c7") //ocean man
-  const [curSongID, setCurSongID] = useState("63fd9d84f9ec3ed4e73c9685") //I am a junkyard
-  const [curSongIndex, setCurSong] = useState(0)
-  const [songs, setSongs] = useState([])
+  const [curSongIndex, setCurSong] = useState(0)//index of the current song playing in the mongodb
+  const [songs, setSongs] = useState([]) //list of song objects from t.library in mongodb
+  const [curSongID, setCurSongID] = useState("63e510bd6d07ddf3584909c7") //ocean man
+  const [isLoadingSong, setLoadingSong] = useState(false) //used when the song ends and the next song is starting
+  
   const changeSong = (id) => {
-    console.log("changing song to: "+id)
+    //console.log("changing song to: "+id)
+    //set the song to the song clicked in the library
   }
+
   const incSong = () => {
     let nextSongIndex = curSongIndex + 1
     if(nextSongIndex > (songs.length - 1)){
       nextSongIndex = 0
     }
+    console.log("incSong next song = ")
+    console.log(songs)
+    console.log("at index: "+curSongIndex)
     setCurSong(nextSongIndex)
     setCurSongID(songs[curSongIndex].objectID)
-    console.log("changed song to: "+songs[curSongIndex].name)
+    console.log(curSongIndex+" incremented song to: "+songs[curSongIndex].name)
   }
 
   const decSong = () => {
-    let nextSongIndex = curSongIndex -1
+    let nextSongIndex = curSongIndex - 1
     if(nextSongIndex < 0){
       nextSongIndex = songs.length - 1
     }
     setCurSong(nextSongIndex)
     setCurSongID(songs[curSongIndex].objectID)
-    console.log("changed song to: "+songs[curSongIndex].objectID)
+    console.log(curSongIndex+" decremented song to: "+songs[curSongIndex].name)
+  }
+
+  const loadSong = () => {
+    setLoadingSong(true)
+    setTimeout(setLoadingSong(false), 1000)//wait a second to finish loading the song
   }
 
   React.useEffect(() => {
@@ -289,7 +306,13 @@ function App() {
     <div className="App">
       <SongAdder/>
       <Library changeSong={changeSong} songs={songs} setSongs={setSongs} />
-      <Player curSongID={curSongID} next={incSong} prev={decSong}/>
+      <Player 
+        curSongID={curSongID} 
+        next={incSong} 
+        prev={decSong} 
+        isLoading = {isLoadingSong}
+        load = {loadSong}
+      />
     </div>
   );
 }
