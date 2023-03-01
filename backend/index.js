@@ -39,10 +39,9 @@ const getAllSongs = async () => {
 }
 
 const listSongs = async () => {
-    let values = await getAllSongs();
-    let ids = values.map(x => x.filename)
-    console.log(ids)
-    return ids;
+    const database = await getConnection();
+    const values = await database.collection("library").find({}).toArray();
+    return values;
 }
 
 //this handler method is from https://medium.com/@richard534/uploading-streaming-audio-using-nodejs-express-mongodb-gridfs-b031a0bcb20f
@@ -154,7 +153,13 @@ const routes = [
         method: 'get',
         path: '/library',
         handler: async (req, res) => {
-            const values = await getAllSongs();
+            const values = await listSongs();
+            console.log(values)
+            res.set({
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin' : '*', 
+                'Access-Control-Allow-Credentials' : true
+            });
             res.status(200).json(values);
         },
     },

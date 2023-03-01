@@ -4,16 +4,19 @@ import rewindpng from './assets/Rewind.png';
 import fastForwardpng from './assets/Fast Forward.png';
 import playpng from './assets/Play.png';
 import pausepng from './assets/Pause.png' 
+import structuredClone from '@ungap/structured-clone';
 
 // function from: https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const myfetch = async (url) => {
-  let data = await myfetch(url);
-  let json = await data.json(); //convert json returned by fetch into an object
-  return json;
+const fetchData = async (url) => {
+  fetch('http://127.0.0.1:8000/library').then(
+      (response) => response.json()
+    ).then((value) => {
+      return value;
+    });
 }
 
 //got this from: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
@@ -60,7 +63,7 @@ async function uploadSong(newSongFile){
 //got this from: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 async function deleteData(id) {
   // Default options are marked with *
-  const response = await myfetch('/deletesong', {
+  const response = await fetchData('/deletesong', {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     headers: {
       'Content-Type': 'application/json'
@@ -80,6 +83,72 @@ const downloadFile = (file, fileName) => {
   document.body.appendChild(a);
   a.click();
   window.URL.revokeObjectURL(url);
+}
+
+//https://stackoverflow.com/questions/1207939/adding-an-onclick-event-to-a-table-row
+//TODO: make this work with props
+const addSongLinks = (songs) => {
+  console.log("rows = ")
+  let table = document.getElementById("songlist");
+    let rows = table.getElementsByTagName("tr")
+    songs.forEach((row,i)=> {
+      row = table.rows[i]
+      let updateSong = (objectID) => {
+        console.log(objectID)
+        //props.changeSong(objectID)
+      }
+      row.onclick = console.log("hi")
+      console.log(row)
+    })
+    console.log("\n")
+}
+//using tempProps to prevent App.js:111 Uncaught TypeError: Cannot add property onClick, object is not extensible
+const Library = (props) => {
+  let tableHeaders = []
+  let tableBody = []
+  const updateSong = () => {
+    let id="63fd9d84f9ec3ed4e73c9685"
+    props.changeSong(id)
+  }
+  
+  if(props.songs.length != 0){ //TODO: figure out how to put this into a seperate function.
+    console.log("\n songs = "+typeof props.songs)
+    console.log(props.songs)
+    tableHeaders = <tr><td key="hname">title</td>
+                       <td key="hartist">artist</td>
+                       <td key="halbum">album</td>
+                   </tr>; //header elements
+    // props.songs.forEach((song, i) => {
+    //   let updateSong = (objectID) => {
+    //     console.log(objectID)
+    //     //props.changeSong(objectID)
+    //   }
+    //   tableBody[i] = <tr key={song.objectID}>
+    //     <td key={"name"}>{song.name}</td>
+    //     <td key={"artist"}>{song.artist}</td> 
+    //     <td key={"album"}>{song.album}</td>
+    //   </tr>
+    //   tableBody[i].onclick = updateSong(song.objectID)
+    // })
+    tableBody = props.songs.map((song) => <tr key={song.objectID} id={song.objectID} onClick={updateSong()}>
+     <td key={"name"}>{song.name}</td>
+     <td key={"artist"}>{song.artist}</td> 
+     <td key={"album"}>{song.album}</td>
+    </tr>);
+    //addSongLinks(props.songs)
+  }
+  
+  return (<div>
+            <h1>Library</h1>
+            <table>
+              <thead>
+                {tableHeaders}
+              </thead>
+              <tbody id="songlist">
+               {tableBody}
+              </tbody>
+            </table>
+          </div>);
 }
 
 const SongAdder = () => {
@@ -132,10 +201,19 @@ const SongAdder = () => {
 }
 
 const Player = (song) => {
-  //const link = 'https://oco.ceoc.cx/api/v1/download?sig=aAgPdxeETul%2BpOXfGcYKIJy5jX8MGfp9F1vm0xYRHzv7WZWu4PEhRh56QKfIvB8urgkZSi%2B1UtaZdaX5I8zFu1B3geNi%2FWJ%2Fi8FBfDgC0KIEauWSf9TH6ZzTjZzIzq3AkXwz%2BLZRy13atFR5vnPwywlza4MN8ij%2FDo4ehh9HkBNzEO83qVMqRXUnvLPXHurL%2B%2BcOFRDEHC1Yd3n%2Bwj7s42PwuFMtHxAK45aMhG475Lg0xvfMbHDM7JmYi1N0rRM%2F7kcQbJYjhBsyi%2Bau6I%2FvHoqcBP95Yvn2lOXzmt5QCcTZZmFy3ffIeLkCl6vq9hlpj0KLy1zpKlEM5hhEaNu%2BRA%3D%3D&v=slFWHLwLAkw&_=0.3713977547051399'
-  //const link = 'http://127.0.0.1:8000/stream/63e510bd6d07ddf3584909c7'
+  React.useEffect(() => {
+    /*TODO: fix occasional error: 
+     * Uncaught (in promise) DOMException: The element has no supported sources.
+     */
+    console.log("Player.Audio changed to next song.")
+    link = 'http://127.0.0.1:8000/stream/'+song.curSongID
+    audio.src = link
+    if(playing){
+      playPause()
+    }
+  }, [song.curSongID] );
   console.log(song)
-  const link = 'http://127.0.0.1:8000/stream/'+song.curSongID
+  let link = 'http://127.0.0.1:8000/stream/'+song.curSongID
   const [audio, setAudio] = useState(new Audio(link))
   audio.addEventListener("ended", function(){
     audio.currentTime = 0
@@ -156,14 +234,12 @@ const Player = (song) => {
       setPlaying(false)
     }
   }
-  //const library = fetch('http://127.0.0.1:8000/library');
-  //console.log(library);
   return (
     <div className="player">
       <h1>Player</h1>
-      <p><img src={rewindpng}/>
+      <p><img src={rewindpng} onClick={song.prev}/>
       <img src={playpng} onClick={playPause} id="playpausebutton"/>
-      <img src={fastForwardpng}/></p>
+      <img src={fastForwardpng} onClick={song.next}/></p>
     </div>
   )
 }
@@ -176,10 +252,44 @@ const Player = (song) => {
 function App() {
   //const [curSongID, setCurSongID] = useState("63e510bd6d07ddf3584909c7") //ocean man
   const [curSongID, setCurSongID] = useState("63fd9d84f9ec3ed4e73c9685") //I am a junkyard
+  const [curSongIndex, setCurSong] = useState(0)
+  const [songs, setSongs] = useState([])
+  const changeSong = (id) => {
+    console.log("changing song to: "+id)
+  }
+  const incSong = () => {
+    let nextSongIndex = curSongIndex + 1
+    if(nextSongIndex > (songs.length - 1)){
+      nextSongIndex = 0
+    }
+    setCurSong(nextSongIndex)
+    setCurSongID(songs[curSongIndex].objectID)
+    console.log("changed song to: "+songs[curSongIndex].name)
+  }
+
+  const decSong = () => {
+    let nextSongIndex = curSongIndex -1
+    if(nextSongIndex < 0){
+      nextSongIndex = songs.length - 1
+    }
+    setCurSong(nextSongIndex)
+    setCurSongID(songs[curSongIndex].objectID)
+    console.log("changed song to: "+songs[curSongIndex].objectID)
+  }
+
+  React.useEffect(() => {
+    fetch('http://127.0.0.1:8000/library').then(
+      (response) => response.json()
+    ).then((value) => {
+      setSongs(value)
+    });
+  }, [] );
+
   return (
     <div className="App">
       <SongAdder/>
-      <Player curSongID={curSongID}/>
+      <Library changeSong={changeSong} songs={songs} setSongs={setSongs} />
+      <Player curSongID={curSongID} next={incSong} prev={decSong}/>
     </div>
   );
 }
