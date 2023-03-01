@@ -211,19 +211,23 @@ const Player = (song) => {
     audio.src = 'http://127.0.0.1:8000/stream/'+song.curSongID
     audio.load()
     setTimeout(() => { //used to ensure audio.play() doesn't conflict with audio.load()
-      if(playing){
+      if(playNextSong){
         audio.play()
+        setPlayNextSong(false)
       }
     },10)
   }, [song.curSongID] );
 
   let link = 'http://127.0.0.1:8000/stream/'+song.curSongID
   const [audio, setAudio] = useState(new Audio(link))
+  const [playing, setPlaying] = useState(false)
   const [initialized, setInitialized] = useState(false)
+  const [playNextSong, setPlayNextSong] = useState(false) //used when a song ends to autoplay next song
   if(!initialized && song.songs.length != 0){ //ensures that only one event listener is attached to audio. After all songs are loaded 
     audio.addEventListener("ended", async (event) =>{
       //TODO: figure out why song.next has  App.songs = []
       audio.currentTime = 0
+      setPlayNextSong(true)
       song.next()
     })
     audio.addEventListener("play", () => {
@@ -238,7 +242,7 @@ const Player = (song) => {
     })
     setInitialized(true)
   }
-  const [playing, setPlaying] = useState(false)
+  
   audio.volume = 0.5
   const playPause = () =>{
     if(!playing){
@@ -247,12 +251,20 @@ const Player = (song) => {
       audio.pause()
     }
   }
+  const nextSong = () => { //used to play next song
+    if(playing){setPlayNextSong(true)}
+    song.next()
+  }
+  const prevSong = () => { //used to play previous song
+    if(playing){setPlayNextSong(true)}
+    song.prev()
+  }
   return (
     <div className="player">
       <h1>Player</h1>
-      <p><img src={rewindpng} onClick={song.prev}/>
+      <p><img src={rewindpng} onClick={prevSong}/>
       <img src={playpng} onClick={playPause} id="playpausebutton"/>
-      <img src={fastForwardpng} onClick={song.next}/></p>
+      <img src={fastForwardpng} onClick={nextSong}/></p>
     </div>
   )
 }
