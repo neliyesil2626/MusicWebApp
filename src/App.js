@@ -201,6 +201,8 @@ const SongAdder = () => {
 }
 
 const Player = (song) => {
+  const loadAudio = () => {
+  }
   React.useEffect(() => {
     /*TODO: fix occasional error: 
      * Uncaught (in promise) DOMException: The element has no supported sources.
@@ -208,6 +210,11 @@ const Player = (song) => {
     console.log("Player.Audio changed to next song: "+song.curSongID)
     audio.src = 'http://127.0.0.1:8000/stream/'+song.curSongID
     audio.load()
+    setTimeout(() => { //used to ensure audio.play() doesn't conflict with audio.load()
+      if(playing){
+        audio.play()
+      }
+    },10)
   }, [song.curSongID] );
 
   let link = 'http://127.0.0.1:8000/stream/'+song.curSongID
@@ -215,9 +222,8 @@ const Player = (song) => {
   const [initialized, setInitialized] = useState(false)
   const playNextSong = ()=> {
     song.next() 
-    playPause()
   }
-  if(!initialized){ //ensures that only one event listener is attached to audio. 
+  if(!initialized && song.songs.length != 0){ //ensures that only one event listener is attached to audio. After all songs are loaded 
     audio.addEventListener("ended", async (event) =>{
       //TODO: figure out why song.next has  App.songs = []
       audio.currentTime = 0
@@ -271,9 +277,9 @@ function App() {
     if(nextSongIndex > (songs.length - 1)){
       nextSongIndex = 0
     }
-    console.log("incSong next song = ")
-    console.log(songs)
-    console.log("at index: "+curSongIndex)
+    // console.log("incSong next song = ")
+    // console.log(songs)
+    // console.log("at index: "+curSongIndex)
     setCurSong(nextSongIndex)
     setCurSongID(songs[curSongIndex].objectID)
     console.log(curSongIndex+" incremented song to: "+songs[curSongIndex].name)
@@ -312,6 +318,7 @@ function App() {
         prev={decSong} 
         isLoading = {isLoadingSong}
         load = {loadSong}
+        songs = {songs}
       />
     </div>
   );
