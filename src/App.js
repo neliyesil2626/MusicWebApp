@@ -206,18 +206,18 @@ const Player = (song) => {
      * Uncaught (in promise) DOMException: The element has no supported sources.
      */
     console.log("Player.Audio changed to next song.")
-    link = 'http://127.0.0.1:8000/stream/'+song.curSongID
-    audio.src = link
+    audio.src = 'http://127.0.0.1:8000/stream/'+song.curSongID
     if(playing){
       playPause()
     }
   }, [song.curSongID] );
-  console.log(song)
+
   let link = 'http://127.0.0.1:8000/stream/'+song.curSongID
   const [audio, setAudio] = useState(new Audio(link))
   audio.addEventListener("ended", function(){
     audio.currentTime = 0
-    console.log("ended")
+    song.next()
+    playPause()
   })
   const [playing, setPlaying] = useState(false)
   audio.volume = 0.5
