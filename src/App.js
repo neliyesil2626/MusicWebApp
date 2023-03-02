@@ -199,14 +199,32 @@ const SongAdder = () => {
     <div><button onClick={onSubmit}>addSong</button></div>
   </div>
 }
-
+const formatTime = (seconds) => {
+  //TODO: finish this
+  let minutes = Math.floor(seconds/60)
+  seconds = Math.floor(seconds % 60)
+  let time
+  if(seconds < 10) {
+    time = (minutes+":0"+seconds)
+  } else {
+    time = (minutes+":"+seconds)
+  }
+  //console.log("time formatted to: "+time)
+  return time
+}
 const Player = (song) => {
+  let songTitle = song.name
+  let link = 'http://127.0.0.1:8000/stream/'+song.curSongID
+  const [audio, setAudio] = useState(new Audio(link))
+  const [playing, setPlaying] = useState(false)
+  const [initialized, setInitialized] = useState(false)
+  const [playNextSong, setPlayNextSong] = useState(false) //used when a song ends to autoplay next song
+  const [timeStamp, setTimeStamp] = useState(formatTime(0))
+  const [timeDuration, setTimeDuration] = useState(formatTime(0))
+
   const loadAudio = () => {
   }
   React.useEffect(() => {
-    /*TODO: fix occasional error: 
-     * Uncaught (in promise) DOMException: The element has no supported sources.
-     */
     console.log("Player.Audio changed to next song: "+song.curSongID)
     audio.src = 'http://127.0.0.1:8000/stream/'+song.curSongID
     audio.load()
@@ -215,14 +233,10 @@ const Player = (song) => {
         audio.play()
         setPlayNextSong(false)
       }
+      setTimeStamp(formatTime(0))
     },10)
   }, [song.curSongID] );
 
-  let link = 'http://127.0.0.1:8000/stream/'+song.curSongID
-  const [audio, setAudio] = useState(new Audio(link))
-  const [playing, setPlaying] = useState(false)
-  const [initialized, setInitialized] = useState(false)
-  const [playNextSong, setPlayNextSong] = useState(false) //used when a song ends to autoplay next song
   if(!initialized && song.songs.length != 0){ //ensures that only one event listener is attached to audio. After all songs are loaded 
     audio.addEventListener("ended", async (event) =>{
       //TODO: figure out why song.next has  App.songs = []
@@ -239,6 +253,12 @@ const Player = (song) => {
       document.getElementById("playpausebutton").setAttribute("src", playpng)
       console.log("paused song")
       setPlaying(false)
+    })
+    audio.addEventListener("durationchange", () => {
+      setTimeDuration(formatTime(audio.duration))
+    })
+    audio.addEventListener("timeupdate", () => {
+      setTimeStamp(formatTime(audio.currentTime))
     })
     setInitialized(true)
   }
@@ -262,9 +282,12 @@ const Player = (song) => {
   return (
     <div className="player">
       <h1>Player</h1>
-      <p><img src={rewindpng} onClick={prevSong}/>
-      <img src={playpng} onClick={playPause} id="playpausebutton"/>
-      <img src={fastForwardpng} onClick={nextSong}/></p>
+      <div>
+        <img src={rewindpng} onClick={prevSong}/>
+        <img src={playpng} onClick={playPause} id="playpausebutton"/>
+        <img src={fastForwardpng} onClick={nextSong}/>
+        <p>{songTitle} {timeStamp}/{timeDuration}</p>
+      </div>
     </div>
   )
 }
@@ -275,11 +298,11 @@ const Player = (song) => {
  * @returns The App component
  */
 function App() {
-  const [curSongIndex, setCurSong] = useState(0)//index of the current song playing in the mongodb
+  const [curSongIndex, setCurSongIndex] = useState(0)//index of the current song playing in the mongodb
   const [songs, setSongs] = useState([]) //list of song objects from t.library in mongodb
   const [curSongID, setCurSongID] = useState("63e510bd6d07ddf3584909c7") //ocean man
   const [isLoadingSong, setLoadingSong] = useState(false) //used when the song ends and the next song is starting
-  
+  const [curSongName, setCurSongName] = useState("Ocean Man")
   const changeSong = (id) => {
     //console.log("changing song to: "+id)
     //set the song to the song clicked in the library
@@ -293,9 +316,12 @@ function App() {
     // console.log("incSong next song = ")
     // console.log(songs)
     // console.log("at index: "+curSongIndex)
-    setCurSong(nextSongIndex)
-    setCurSongID(songs[curSongIndex].objectID)
-    console.log(curSongIndex+" incremented song to: "+songs[curSongIndex].name)
+    setCurSongIndex(nextSongIndex)
+    setCurSongID(songs[nextSongIndex].objectID)
+    setCurSongName(songs[nextSongIndex].name)
+    console.log(songs)
+    console.log(curSongIndex+" incremented song to: "+curSongName)
+    
   }
 
   const decSong = () => {
@@ -303,9 +329,11 @@ function App() {
     if(nextSongIndex < 0){
       nextSongIndex = songs.length - 1
     }
-    setCurSong(nextSongIndex)
-    setCurSongID(songs[curSongIndex].objectID)
-    console.log(curSongIndex+" decremented song to: "+songs[curSongIndex].name)
+    setCurSongIndex(nextSongIndex)
+    setCurSongID(songs[nextSongIndex].objectID)
+    setCurSongName(songs[nextSongIndex].name)
+    console.log(songs)
+    console.log(curSongIndex+" decremented song to: "+curSongName)
   }
 
   const loadSong = () => {
@@ -326,12 +354,14 @@ function App() {
       <SongAdder/>
       <Library changeSong={changeSong} songs={songs} setSongs={setSongs} />
       <Player 
+        name={curSongName}
         curSongID={curSongID} 
         next={incSong} 
         prev={decSong} 
         isLoading = {isLoadingSong}
         load = {loadSong}
         songs = {songs}
+        index = {curSongIndex}
       />
     </div>
   );
