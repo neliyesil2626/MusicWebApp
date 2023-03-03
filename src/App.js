@@ -343,7 +343,9 @@ function App() {
     setTimeout(setLoadingSong(false), 1000)//wait a second to finish loading the song
   }
   if(songs.length == 0 || typeof songs == Promise){
-    return <p>Loading...</p>
+    return <div className="App">
+              <SongAdder/>
+           </div>
   }
   
   return (
