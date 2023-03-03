@@ -7,7 +7,7 @@ body {
 .songlist {
   border-collapse: collapse;
 }
-.artist,.album {
+.artist,.number {
   color: #89929B;
 }
 #listheaders {

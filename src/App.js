@@ -106,38 +106,22 @@ const addSongLinks = (songs) => {
 const Library = (props) => {
   let tableHeaders = []
   let tableBody = []
-  const updateSong = () => {
-    let id="63fd9d84f9ec3ed4e73c9685"
-    props.changeSong(id)
-  }
-  
-  if(props.songs.length != 0){ //TODO: figure out how to put this into a seperate function.
-    // console.log("\n songs = "+typeof props.songs)
-    // console.log(props.songs)
-    tableHeaders = <tr><td key="hname">title</td>
+    tableHeaders = <tr>
+                       <td key="hnumber">#</td>
+                       <td key="hname">title</td>
                        <td key="hartist">artist</td>
                        <td key="halbum">album</td>
                    </tr>; //header elements
-    // props.songs.forEach((song, i) => {
-    //   let updateSong = (objectID) => {
-    //     console.log(objectID)
-    //     //props.changeSong(objectID)
-    //   }
-    //   tableBody[i] = <tr key={song.objectID}>
-    //     <td key={"name"}>{song.name}</td>
-    //     <td key={"artist"}>{song.artist}</td> 
-    //     <td key={"album"}>{song.album}</td>
-    //   </tr>
-    //   tableBody[i].onclick = updateSong(song.objectID)
+    tableBody = props.songs.map((song, i) => <tr key={song.objectID} id={song.objectID}>
+                                               <td key={"number"} className="number">{i+1}</td>
+                                               <td key={"name"} className="name">{song.name}</td>
+                                               <td key={"artist"} className="artist">{song.artist}</td> 
+                                               <td key={"album"} className="album">{song.album}</td>
+                                             </tr>);
+    // tableBody.forEach((row, i) => {
+    //   row.onclick = console.log("lol")
     // })
-    tableBody = props.songs.map((song) => <tr key={song.objectID} id={song.objectID} onClick={updateSong()}>
-     <td key={"name"}>{song.name}</td>
-     <td key={"artist"} className="artist">{song.artist}</td> 
-     <td key={"album"} className="album">{song.album}</td>
-    </tr>);
     //addSongLinks(props.songs)
-  }
-  
   return (<div>
             <h1>Library</h1>
             <table className="songlist">
@@ -308,11 +292,6 @@ function App() {
       setSongs(value)
     });
   }, [] );
-  
-  const changeSong = (id) => {
-    //console.log("changing song to: "+id)
-    //set the song to the song clicked in the library
-  }
 
   const incSong = () => {
     let nextSongIndex = curSongIndex + 1
@@ -342,16 +321,19 @@ function App() {
     setLoadingSong(true)
     setTimeout(setLoadingSong(false), 1000)//wait a second to finish loading the song
   }
-  if(songs.length == 0 || typeof songs == Promise){
+
+  /*
+   * I added this conditional because I don't want to load the app unless the list of songs is loaded from the db. 
+   */
+  if(songs.length == 0 || typeof songs == Promise){ 
     return <div className="App">
               <SongAdder/>
            </div>
   }
-  
   return (
     <div className="App">
       <SongAdder/>
-      <Library changeSong={changeSong} songs={songs} setSongs={setSongs} />
+      <Library setIndex={setCurSongIndex} songs={songs} setSongs={setSongs} />
       <Player 
         name={songs[curSongIndex].name}
         curSongID={songs[curSongIndex].objectID} 
