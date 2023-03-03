@@ -12,7 +12,7 @@ function sleep(ms) {
 }
 
 const fetchData = async (url) => {
-  fetch('http://127.0.0.1:8000/library').then(
+  fetch('/library').then(
       (response) => response.json()
     ).then((value) => {
       return value;
@@ -132,16 +132,16 @@ const Library = (props) => {
     // })
     tableBody = props.songs.map((song) => <tr key={song.objectID} id={song.objectID} onClick={updateSong()}>
      <td key={"name"}>{song.name}</td>
-     <td key={"artist"}>{song.artist}</td> 
-     <td key={"album"}>{song.album}</td>
+     <td key={"artist"} className="artist">{song.artist}</td> 
+     <td key={"album"} className="album">{song.album}</td>
     </tr>);
     //addSongLinks(props.songs)
   }
   
   return (<div>
             <h1>Library</h1>
-            <table>
-              <thead>
+            <table className="songlist">
+              <thead id="listheaders">
                 {tableHeaders}
               </thead>
               <tbody id="songlist">
@@ -171,7 +171,7 @@ const SongAdder = () => {
       id = id.replace('"','')
       console.log("uploaded song with ObjectId = " + id)
 
-      let songFile = new Audio('http://127.0.0.1:8000/stream/'+id)
+      let songFile = new Audio('/stream/'+id)
       console.log("\nsongfile: ")
       console.log(songFile)
       duration = songFile.duration 
@@ -213,9 +213,8 @@ const formatTime = (seconds) => {
   return time
 }
 const Player = (song) => {
-  let songTitle = song.name
-  let link = 'http://127.0.0.1:8000/stream/'+song.curSongID
-  const [audio, setAudio] = useState(new Audio(link))
+  let link = '/stream/'+song.curSongID
+  const [audio, setAudio] = useState(new Audio())
   const [playing, setPlaying] = useState(false)
   const [initialized, setInitialized] = useState(false)
   const [playNextSong, setPlayNextSong] = useState(false) //used when a song ends to autoplay next song
@@ -226,7 +225,7 @@ const Player = (song) => {
   }
   React.useEffect(() => {
     console.log("Player.Audio changed to next song: "+song.curSongID)
-    audio.src = 'http://127.0.0.1:8000/stream/'+song.curSongID
+    audio.src = link
     audio.load()
     setTimeout(() => { //used to ensure audio.play() doesn't conflict with audio.load()
       if(playNextSong){
@@ -237,7 +236,8 @@ const Player = (song) => {
     },10)
   }, [song.curSongID] );
 
-  if(!initialized && song.songs.length != 0){ //ensures that only one event listener is attached to audio. After all songs are loaded 
+  if(!initialized && typeof song.songs != Promise){ //ensures that only one event listener is attached to audio. After all songs are loaded 
+    audio.src = link
     audio.addEventListener("ended", async (event) =>{
       //TODO: figure out why song.next has  App.songs = []
       audio.currentTime = 0
@@ -261,10 +261,11 @@ const Player = (song) => {
       setTimeStamp(formatTime(audio.currentTime))
     })
     setInitialized(true)
+    console.log("song title should now be: "+song.name)
   }
   
   audio.volume = 0.5
-  const playPause = () =>{
+  const playPause = () =>{ 
     if(!playing){
       audio.play()
     } else {
@@ -286,7 +287,7 @@ const Player = (song) => {
         <img src={rewindpng} onClick={prevSong}/>
         <img src={playpng} onClick={playPause} id="playpausebutton"/>
         <img src={fastForwardpng} onClick={nextSong}/>
-        <p>{songTitle} {timeStamp}/{timeDuration}</p>
+        <p>{song.name} {timeStamp}/{timeDuration}</p>
       </div>
     </div>
   )
@@ -300,9 +301,19 @@ const Player = (song) => {
 function App() {
   const [curSongIndex, setCurSongIndex] = useState(0)//index of the current song playing in the mongodb
   const [songs, setSongs] = useState([]) //list of song objects from t.library in mongodb
-  const [curSongID, setCurSongID] = useState("63e510bd6d07ddf3584909c7") //ocean man
+  const [curSongID, setCurSongID] = useState("") //figure out how to fix 404 error before promise loads. 
   const [isLoadingSong, setLoadingSong] = useState(false) //used when the song ends and the next song is starting
-  const [curSongName, setCurSongName] = useState("Ocean Man")
+  const [curSongName, setCurSongName] = useState("Title")
+  React.useEffect(() => { //set variables when song info is retrieved from backend.
+    fetch('/library').then(
+      (response) => response.json()
+    ).then((value) => {
+      setCurSongName(value[0].name)
+      setCurSongID(value[0].objectID)
+      setSongs(value)
+    });
+  }, [] );
+  
   const changeSong = (id) => {
     //console.log("changing song to: "+id)
     //set the song to the song clicked in the library
@@ -341,13 +352,7 @@ function App() {
     setTimeout(setLoadingSong(false), 1000)//wait a second to finish loading the song
   }
 
-  React.useEffect(() => {
-    fetch('http://127.0.0.1:8000/library').then(
-      (response) => response.json()
-    ).then((value) => {
-      setSongs(value)
-    });
-  }, [] );
+
 
   return (
     <div className="App">
@@ -355,6 +360,7 @@ function App() {
       <Library changeSong={changeSong} songs={songs} setSongs={setSongs} />
       <Player 
         name={curSongName}
+        setName={setCurSongName}
         curSongID={curSongID} 
         next={incSong} 
         prev={decSong} 
