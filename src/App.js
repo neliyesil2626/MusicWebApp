@@ -236,7 +236,7 @@ const Player = (song) => {
     },10)
   }, [song.curSongID] );
 
-  if(!initialized && typeof song.songs != Promise){ //ensures that only one event listener is attached to audio. After all songs are loaded 
+  if(!initialized){ //ensures that only one event listener is attached to audio. After all songs are loaded 
     audio.src = link
     audio.addEventListener("ended", async (event) =>{
       //TODO: figure out why song.next has  App.songs = []
@@ -261,7 +261,6 @@ const Player = (song) => {
       setTimeStamp(formatTime(audio.currentTime))
     })
     setInitialized(true)
-    console.log("song title should now be: "+song.name)
   }
   
   audio.volume = 0.5
@@ -301,15 +300,11 @@ const Player = (song) => {
 function App() {
   const [curSongIndex, setCurSongIndex] = useState(0)//index of the current song playing in the mongodb
   const [songs, setSongs] = useState([]) //list of song objects from t.library in mongodb
-  const [curSongID, setCurSongID] = useState("") //figure out how to fix 404 error before promise loads. 
   const [isLoadingSong, setLoadingSong] = useState(false) //used when the song ends and the next song is starting
-  const [curSongName, setCurSongName] = useState("Title")
   React.useEffect(() => { //set variables when song info is retrieved from backend.
     fetch('/library').then(
       (response) => response.json()
     ).then((value) => {
-      setCurSongName(value[0].name)
-      setCurSongID(value[0].objectID)
       setSongs(value)
     });
   }, [] );
@@ -328,10 +323,8 @@ function App() {
     // console.log(songs)
     // console.log("at index: "+curSongIndex)
     setCurSongIndex(nextSongIndex)
-    setCurSongID(songs[nextSongIndex].objectID)
-    setCurSongName(songs[nextSongIndex].name)
     console.log(songs)
-    console.log(curSongIndex+" incremented song to: "+curSongName)
+    console.log(curSongIndex+" incremented song to: "+songs[curSongIndex].name)
     
   }
 
@@ -341,27 +334,25 @@ function App() {
       nextSongIndex = songs.length - 1
     }
     setCurSongIndex(nextSongIndex)
-    setCurSongID(songs[nextSongIndex].objectID)
-    setCurSongName(songs[nextSongIndex].name)
     console.log(songs)
-    console.log(curSongIndex+" decremented song to: "+curSongName)
+    console.log(curSongIndex+" decremented song to: "+songs[curSongIndex].name)
   }
 
   const loadSong = () => {
     setLoadingSong(true)
     setTimeout(setLoadingSong(false), 1000)//wait a second to finish loading the song
   }
-
-
-
+  if(songs.length == 0 || typeof songs == Promise){
+    return <p>Loading...</p>
+  }
+  
   return (
     <div className="App">
       <SongAdder/>
       <Library changeSong={changeSong} songs={songs} setSongs={setSongs} />
       <Player 
-        name={curSongName}
-        setName={setCurSongName}
-        curSongID={curSongID} 
+        name={songs[curSongIndex].name}
+        curSongID={songs[curSongIndex].objectID} 
         next={incSong} 
         prev={decSong} 
         isLoading = {isLoadingSong}

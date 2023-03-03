@@ -1,5 +1,16 @@
+
 body {
-    background-color: #21262D;
-    color: #ECF2F8;
-    font-family:'Space Mono', Space, monospace;
-  }
+  background-color: #21262D;
+  color: #ECF2F8;
+  font-family:'Space Mono', Space, monospace;
+}
+.songlist {
+  border-collapse: collapse;
+}
+.artist,.album {
+  color: #89929B;
+}
+#listheaders {
+  color: #89929B;
+  border-bottom: 1px solid #89929B;
+}
