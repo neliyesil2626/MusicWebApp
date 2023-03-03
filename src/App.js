@@ -85,23 +85,6 @@ const downloadFile = (file, fileName) => {
   window.URL.revokeObjectURL(url);
 }
 
-//https://stackoverflow.com/questions/1207939/adding-an-onclick-event-to-a-table-row
-//TODO: make this work with props
-const addSongLinks = (songs) => {
-  console.log("rows = ")
-  let table = document.getElementById("songlist");
-    let rows = table.getElementsByTagName("tr")
-    songs.forEach((row,i)=> {
-      row = table.rows[i]
-      let updateSong = (objectID) => {
-        console.log(objectID)
-        //props.changeSong(objectID)
-      }
-      row.onclick = console.log("hi")
-      console.log(row)
-    })
-    console.log("\n")
-}
 //using tempProps to prevent App.js:111 Uncaught TypeError: Cannot add property onClick, object is not extensible
 const Library = (props) => {
   let tableHeaders = []
@@ -112,7 +95,7 @@ const Library = (props) => {
                        <td key="hartist">artist</td>
                        <td key="halbum">album</td>
                    </tr>; //header elements
-    tableBody = props.songs.map((song, i) => <tr key={song.objectID} id={song.objectID}>
+    tableBody = props.songs.map((song, i) => <tr key={song.objectID} id={song.objectID} onClick={() => { props.setIndex(i)}}>
                                                <td key={"number"} className="number">{i+1}</td>
                                                <td key={"name"} className="name">{song.name}</td>
                                                <td key={"artist"} className="artist">{song.artist}</td> 
@@ -184,7 +167,6 @@ const SongAdder = () => {
   </div>
 }
 const formatTime = (seconds) => {
-  //TODO: finish this
   let minutes = Math.floor(seconds/60)
   seconds = Math.floor(seconds % 60)
   let time
@@ -197,45 +179,47 @@ const formatTime = (seconds) => {
   return time
 }
 const Player = (song) => {
-  let link = '/stream/'+song.curSongID
   const [audio, setAudio] = useState(new Audio())
   const [playing, setPlaying] = useState(false)
   const [initialized, setInitialized] = useState(false)
   const [playNextSong, setPlayNextSong] = useState(false) //used when a song ends to autoplay next song
   const [timeStamp, setTimeStamp] = useState(formatTime(0))
   const [timeDuration, setTimeDuration] = useState(formatTime(0))
+  const [songEnded, setSongEnded] = useState(false) //used to keep track of when a song finishes playing.
 
-  const loadAudio = () => {
-  }
   React.useEffect(() => {
-    console.log("Player.Audio changed to next song: "+song.curSongID)
-    audio.src = link
+    console.log("Player.Audio changed to next song: "+song.name)
+    audio.src = '/stream/'+song.songs[song.index].objectID
     audio.load()
     setTimeout(() => { //used to ensure audio.play() doesn't conflict with audio.load()
-      if(playNextSong){
+      if(playing || playNextSong){ //why am I no longer getting No Audio Source error???
         audio.play()
         setPlayNextSong(false)
       }
       setTimeStamp(formatTime(0))
     },10)
-  }, [song.curSongID] );
+  }, [song.index] );
 
-  if(!initialized){ //ensures that only one event listener is attached to audio. After all songs are loaded 
-    audio.src = link
-    audio.addEventListener("ended", async (event) =>{
-      //TODO: figure out why song.next has  App.songs = []
-      audio.currentTime = 0
+  React.useEffect(() => {
+    if(songEnded){
       setPlayNextSong(true)
       song.next()
+      setSongEnded(false)
+    }
+  }, [songEnded])
+
+  if(!initialized){ //ensures that only one event listener is attached to audio. After all songs are loaded 
+    audio.src = '/stream/'+song.curSongID
+    audio.addEventListener("ended", async (event) =>{ 
+
+     setSongEnded("true")
     })
     audio.addEventListener("play", () => {
       document.getElementById("playpausebutton").setAttribute("src", pausepng)
-      console.log("playing song from " + link)
       setPlaying(true)
     })
     audio.addEventListener("pause", () => {
       document.getElementById("playpausebutton").setAttribute("src", playpng)
-      console.log("paused song")
       setPlaying(false)
     })
     audio.addEventListener("durationchange", () => {
@@ -256,10 +240,12 @@ const Player = (song) => {
     }
   }
   const nextSong = () => { //used to play next song
+    console.log("Player.nextSong() was called.")
     if(playing){setPlayNextSong(true)}
     song.next()
   }
   const prevSong = () => { //used to play previous song
+    console.log("Player.prevSong() was called.")
     if(playing){setPlayNextSong(true)}
     song.prev()
   }
@@ -267,10 +253,11 @@ const Player = (song) => {
     <div className="player">
       <h1>Player</h1>
       <div>
-        <img src={rewindpng} onClick={prevSong}/>
+        <img src={rewindpng} onClick={() => {prevSong()}}/>
         <img src={playpng} onClick={playPause} id="playpausebutton"/>
-        <img src={fastForwardpng} onClick={nextSong}/>
+        <img src={fastForwardpng} onClick={() => {nextSong()}}/>
         <p>{song.name} {timeStamp}/{timeDuration}</p>
+        <button onClick={()=> {console.log("currently playing: "+song.name+", with index: "+song.index)}}>print cur song</button>
       </div>
     </div>
   )
@@ -295,16 +282,11 @@ function App() {
 
   const incSong = () => {
     let nextSongIndex = curSongIndex + 1
-    if(nextSongIndex > (songs.length - 1)){
+    if(nextSongIndex  >= 4){
       nextSongIndex = 0
     }
-    // console.log("incSong next song = ")
-    // console.log(songs)
-    // console.log("at index: "+curSongIndex)
     setCurSongIndex(nextSongIndex)
-    console.log(songs)
-    console.log(curSongIndex+" incremented song to: "+songs[curSongIndex].name)
-    
+    console.log(nextSongIndex+" incremented song to: "+songs[nextSongIndex].name)
   }
 
   const decSong = () => {
@@ -313,8 +295,7 @@ function App() {
       nextSongIndex = songs.length - 1
     }
     setCurSongIndex(nextSongIndex)
-    console.log(songs)
-    console.log(curSongIndex+" decremented song to: "+songs[curSongIndex].name)
+    console.log(nextSongIndex+" decremented song to: "+songs[nextSongIndex].name)
   }
 
   const loadSong = () => {
