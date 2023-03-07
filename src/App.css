@@ -14,3 +14,7 @@ body {
   color: #89929B;
   border-bottom: 1px solid #89929B;
 }
+
+#validupdateprompt {
+  color: red
+}

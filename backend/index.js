@@ -1,11 +1,9 @@
 import express from 'express';
-import mongodb, { GridFSBucket } from 'mongodb';
+import { GridFSBucket } from 'mongodb';
 import bodyParser from 'body-parser';
 import { MongoClient, ObjectId } from 'mongodb';
 import { Readable} from 'stream';
 import multer from 'multer';
-import {Router} from 'express';
-//import {Grid} from 'gridfs-stream';
 
 const MONGO_URL = 'mongodb://127.0.0.1:27017';
 const MONGO_DATABASE = "t"; // we're using the default test database
@@ -19,7 +17,9 @@ const connect = async (url) => {
     });    
     return client;
 }
-
+/*
+ * returns a mongoclient that is connected to the t database. (defined above)
+ */
 const getConnection = async () => {
     if (!dbClient) {
         dbClient = await connect(MONGO_URL);
@@ -46,30 +46,41 @@ const listSongs = async () => {
 
 //this handler method is from https://medium.com/@richard534/uploading-streaming-audio-using-nodejs-express-mongodb-gridfs-b031a0bcb20f
 const streamSong = async (trackNumber, res) => {
-    const db = await getConnection();
-    try {
+    const db = await getConnection(); 
+    try {// if tracknumber is an invalid format, this will return the error in the catch
         console.log("tracknumber = " + trackNumber);
-        var trackID = new ObjectId(trackNumber);
-        
+        var trackID = new ObjectId(trackNumber);         
     } catch(err) {
         return res.status(400).json({ message: "Invalid trackID in URL parameter. Must be a single String of 12 bytes or a string of 24 hex characters" }); 
     }
 
-    res.set('content-type', 'audio/mp3');
+    //these two statements set the respective headers of the HTTP GET response
+    res.set('content-type', 'audio/mp3'); 
     res.set('accept-ranges', 'bytes');
 
-    let bucket = new GridFSBucket(db);
+
+    //a bucket what gridfs calls the group of collections containing the chunks of a file
+    //these two lines open up a stream to the t database and 
+    //use it to download the mp3 file
+    let bucket = new GridFSBucket(db); 
     let downloadStream = bucket.openDownloadStream(trackID);
 
-    downloadStream.on('data', (chunk) => { //when a chunk is recieved from mongo
+    //when a chunk is recieved from mongo this method is called.
+    //this method writes that chunk pf data to the HTTP GET response.
+    downloadStream.on('data', (chunk) => { 
         res.write(chunk);
     });
 
-    downloadStream.on('error', () => { //when an error occurs
+
+    //if there is an error while streaming the bucket, the response status is sent to
+    // 404 not found.
+    downloadStream.on('error', () => { 
         res.sendStatus(404);
     });
 
-    downloadStream.on('end', () => { //when data transfer terminates
+    //once the bucket finishes streaming from the mongodb, the HTTP GET response is ended.
+    //res.end() is used to tell the webserver that there are no more chunks to recieve.  
+    downloadStream.on('end', () => {
         res.end();
     });
 }
@@ -84,32 +95,45 @@ const uploadSong = async (req, res) => {
     let maxFileSize = 211.68 * 1000000; 
     console.log("uploading song: "+req.body.name)
     const db = await getConnection();
+
+    //since the song is being sent to the backend server as formdata, multer is used to
+    //process the file inside the form. 
     const storage = multer.memoryStorage()
     const upload = multer({ storage: storage, limits: { fields: 1, fileSize: maxFileSize, files: 1, parts: 2 }});
+    
+    //since there is only one mp3 file that needs to be uploaded, multer.Single() is used
+    // to write and upload the file to the mongodb.
+    //multer.single() takes the request, response, and a handler method as parameters
     upload.single('track')(req, res, (err) => {
         if (err) {
           return res.status(400).json({ message: "Upload Request Validation Failed", code: err });
-        } else if(!req.body.name) {
+        } else if(!req.body.name) { //if there is no trackname, send back an error
           return res.status(400).json({ message: "No track name in request body" });
         }
-        let trackName = req.body.name;
+        let trackName = req.body.name; //trackname recieved from HTTP GET request
 
-         // Covert buffer to Readable Stream
+         // readableTrackStream is a readable stream that will be used to 
         const readableTrackStream = new Readable();
         readableTrackStream.push(req.file.buffer);
         readableTrackStream.push(null);
 
         let bucket = new GridFSBucket(db);
         let uploadStream = bucket.openUploadStream(trackName); //writable buffered stream
-        let id = uploadStream.id; //the ObjectID of the track that was just uploaded
+        let id = uploadStream.id; //the ObjectID of the track that will be uploaded
 
-        //pipe pushes file to stream. 
+        //readableTrackStream.pipe writes the trackfile to the upload stream
+        //which uploads the file to the mongodb.
         readableTrackStream.pipe(uploadStream); 
+
+        //if there is an error while uploading the stream to the mongodb, an error code
+        // is sent to the mongodb
         uploadStream.on('error', () => {
             console.log("upload failed")
             return res.status(500).json({ message: "Error uploading file" });
         });
       
+        //once upload is complete, 201 created success status is sent to mongodb
+        //and upload is terminated. 
         uploadStream.on('finish', () => {
             console.log("upload complete")
             return res.status(201).json(id);

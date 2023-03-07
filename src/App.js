@@ -122,6 +122,7 @@ const SongAdder = () => {
   const [title, setTitle] = useState("")
   const [artist, setArtist] = useState("")
   const [album, setAlbum] = useState("")
+  const [validUploadPrompt, setValidUploadPrompt] = useState("");
   let duration = -1
 
   const onUpload = () => {
@@ -132,28 +133,36 @@ const SongAdder = () => {
     console.log("album = "+album)
   }
   const onSubmit = async () => {
-    console.log("Submitting...")
-    uploadSong(document.getElementById("upload").files[0]).then((id) => {
-      id = id.replace('"','')
-      id = id.replace('"','')
-      console.log("uploaded song with ObjectId = " + id)
+    let fileExtension = document.getElementById("upload").files[0].name.split('.').pop()
+    console.log("fileExtension ="+fileExtension)
+    if(fileExtension != 'mp3'){
+      console.log("ERROR: uploaded file type must have extension .mp3")
+      setValidUploadPrompt("file must be of type .mp3")
+    } else {
+      setValidUploadPrompt("")
+      console.log("Submitting...")
+      uploadSong(document.getElementById("upload").files[0]).then((id) => {
+        id = id.replace('"','')
+        id = id.replace('"','')
+        console.log("uploaded song with ObjectId = " + id)
 
-      let songFile = new Audio('/stream/'+id)
-      console.log("\nsongfile: ")
-      console.log(songFile)
-      duration = songFile.duration 
-  
-      let newSong = {
-        name: title,
-        artist: artist,
-        album: album,
-        duration: duration,
-        objectID: id
-      }
-      console.log("\nnewSong: ")
-      console.log(newSong)
-      addSong(newSong)
+        let songFile = new Audio('/stream/'+id)
+        console.log("\nsongfile: ")
+        console.log(songFile)
+        duration = songFile.duration 
+    
+        let newSong = {
+          name: title,
+          artist: artist,
+          album: album,
+          duration: duration,
+          objectID: id
+        }
+        console.log("\nnewSong: ")
+        console.log(newSong)
+        addSong(newSong)
     })
+    }
   } 
 
 
@@ -162,8 +171,8 @@ const SongAdder = () => {
     <div>Title: <input type="text" name="songTitle" onChange={event => setTitle(event.target.value)}></input></div>
     <div>Artist: <input type="text" name="songArtist" onChange={event => setArtist(event.target.value)}></input></div>
     <div>Album: <input type="text" name="songAlbum" onChange={event => setAlbum(event.target.value)}></input></div>
-    <div>Audio File: <input id="upload" type="file" onChange={event => onUpload(event.target.value)}></input></div>
-    <div><button onClick={onSubmit}>addSong</button></div>
+    <div>Audio File: <input id="upload" type="file" accept=".mp3" onChange={event => onUpload(event.target.value)}></input></div>
+    <div><button onClick={onSubmit}>addSong</button><p id="validupdateprompt">{validUploadPrompt}</p></div>
   </div>
 }
 const formatTime = (seconds) => {
@@ -257,7 +266,6 @@ const Player = (song) => {
         <img src={playpng} onClick={playPause} id="playpausebutton"/>
         <img src={fastForwardpng} onClick={() => {nextSong()}}/>
         <p>{song.name} {timeStamp}/{timeDuration}</p>
-        <button onClick={()=> {console.log("currently playing: "+song.name+", with index: "+song.index)}}>print cur song</button>
       </div>
     </div>
   )
