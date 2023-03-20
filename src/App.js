@@ -175,6 +175,7 @@ const SongAdder = () => {
     <div><button onClick={onSubmit}>addSong</button><p id="validupdateprompt">{validUploadPrompt}</p></div>
   </div>
 }
+
 const formatTime = (seconds) => {
   let minutes = Math.floor(seconds/60)
   seconds = Math.floor(seconds % 60)
@@ -187,6 +188,12 @@ const formatTime = (seconds) => {
   //console.log("time formatted to: "+time)
   return time
 }
+const formatProgress = (currentTime, duration) => {
+  let progress = {width: currentTime/duration*100+'%'}
+  console.log("progress = "+ progress)
+  return progress
+}
+
 const Player = (song) => {
   const [audio, setAudio] = useState(new Audio())
   const [playing, setPlaying] = useState(false)
@@ -195,7 +202,7 @@ const Player = (song) => {
   const [timeStamp, setTimeStamp] = useState(0)
   const [timeDuration, setTimeDuration] = useState(0)
   const [songEnded, setSongEnded] = useState(false) //used to keep track of when a song finishes playing.
-
+  let progress = formatProgress(timeStamp, timeDuration)
   React.useEffect(() => {
     console.log("Player.Audio changed to next song: "+song.name)
     audio.src = '/stream/'+song.songs[song.index].objectID
@@ -217,6 +224,9 @@ const Player = (song) => {
     }
   }, [songEnded])
 
+  
+
+  
   if(!initialized){ //ensures that only one event listener is attached to audio. After all songs are loaded 
     audio.src = '/stream/'+song.curSongID
     audio.addEventListener("ended", async (event) =>{ 
@@ -266,7 +276,9 @@ const Player = (song) => {
         <img src={fastForwardpng} onClick={() => {nextSong()}}/>
         <label>{song.name}</label>
         <br></br>
-        <progress id="progressbar" value={timeStamp} max={timeDuration}></progress>
+        <div id="progressbar-container">
+          <span id="progressbar" style={progress}></span>
+        </div>
         <label>{formatTime(timeStamp)}/{formatTime(timeDuration)}</label>
       </div>
     </div>

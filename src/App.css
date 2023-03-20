@@ -18,3 +18,15 @@ body {
 #validupdateprompt {
   color: red
 }
+#progressbar-container {
+  height: 6px;
+  background-color: #3A3E43;
+  position: relative;
+}
+#progressbar {
+  position: absolute;
+  height: 100%;
+  width: 0%;
+  background-color: #FB4C81;
+}
+
