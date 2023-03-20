@@ -192,8 +192,8 @@ const Player = (song) => {
   const [playing, setPlaying] = useState(false)
   const [initialized, setInitialized] = useState(false)
   const [playNextSong, setPlayNextSong] = useState(false) //used when a song ends to autoplay next song
-  const [timeStamp, setTimeStamp] = useState(formatTime(0))
-  const [timeDuration, setTimeDuration] = useState(formatTime(0))
+  const [timeStamp, setTimeStamp] = useState(0)
+  const [timeDuration, setTimeDuration] = useState(0)
   const [songEnded, setSongEnded] = useState(false) //used to keep track of when a song finishes playing.
 
   React.useEffect(() => {
@@ -205,7 +205,7 @@ const Player = (song) => {
         audio.play()
         setPlayNextSong(false)
       }
-      setTimeStamp(formatTime(0))
+      setTimeStamp(0)
     },10)
   }, [song.index] );
 
@@ -220,7 +220,6 @@ const Player = (song) => {
   if(!initialized){ //ensures that only one event listener is attached to audio. After all songs are loaded 
     audio.src = '/stream/'+song.curSongID
     audio.addEventListener("ended", async (event) =>{ 
-
      setSongEnded("true")
     })
     audio.addEventListener("play", () => {
@@ -232,10 +231,10 @@ const Player = (song) => {
       setPlaying(false)
     })
     audio.addEventListener("durationchange", () => {
-      setTimeDuration(formatTime(audio.duration))
+      setTimeDuration(audio.duration)
     })
     audio.addEventListener("timeupdate", () => {
-      setTimeStamp(formatTime(audio.currentTime))
+      setTimeStamp(audio.currentTime)
     })
     setInitialized(true)
   }
@@ -265,7 +264,10 @@ const Player = (song) => {
         <img src={rewindpng} onClick={() => {prevSong()}}/>
         <img src={playpng} onClick={playPause} id="playpausebutton"/>
         <img src={fastForwardpng} onClick={() => {nextSong()}}/>
-        <p>{song.name} {timeStamp}/{timeDuration}</p>
+        <label>{song.name}</label>
+        <br></br>
+        <progress id="progressbar" value={timeStamp} max={timeDuration}></progress>
+        <label>{formatTime(timeStamp)}/{formatTime(timeDuration)}</label>
       </div>
     </div>
   )

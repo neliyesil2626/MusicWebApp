@@ -112,10 +112,11 @@ const uploadSong = async (req, res) => {
         }
         let trackName = req.body.name; //trackname recieved from HTTP GET request
 
-         // readableTrackStream is a readable stream that will be used to 
+         // readableTrackStream is a readable stream that will be used to communicate with the mongoDB
+         // https://stackoverflow.com/questions/38316821/why-can-i-push-into-a-readable-stream
         const readableTrackStream = new Readable();
         readableTrackStream.push(req.file.buffer);
-        readableTrackStream.push(null);
+        readableTrackStream.push(null); //done writing data. 
 
         let bucket = new GridFSBucket(db);
         let uploadStream = bucket.openUploadStream(trackName); //writable buffered stream
@@ -126,7 +127,7 @@ const uploadSong = async (req, res) => {
         readableTrackStream.pipe(uploadStream); 
 
         //if there is an error while uploading the stream to the mongodb, an error code
-        // is sent to the mongodb
+        //is sent to the mongodb
         uploadStream.on('error', () => {
             console.log("upload failed")
             return res.status(500).json({ message: "Error uploading file" });
