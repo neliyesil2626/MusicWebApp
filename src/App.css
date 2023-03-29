@@ -20,6 +20,7 @@ body {
 }
 #progressbar-container {
   height: 6px;
+  width: 700px;
   background-color: #3A3E43;
   position: relative;
 }
@@ -28,5 +29,9 @@ body {
   height: 100%;
   width: 0%;
   background-color: #FB4C81;
+}
+
+em{
+  color: #FB4C81;
 }
 

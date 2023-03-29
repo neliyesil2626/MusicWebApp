@@ -6,7 +6,8 @@ import { Readable} from 'stream';
 import multer from 'multer';
 
 const MONGO_URL = 'mongodb://127.0.0.1:27017';
-const MONGO_DATABASE = "t"; // we're using the default test database
+const MONGO_DATABASE = "demo"; // we're using the default test database
+const MONGO_LIBRARY = "demolibrary";
 
 
 let dbClient = null;
@@ -40,7 +41,7 @@ const getAllSongs = async () => {
 
 const listSongs = async () => {
     const database = await getConnection();
-    const values = await database.collection("library").find({}).toArray();
+    const values = await database.collection(MONGO_LIBRARY).find({}).toArray();
     return values;
 }
 
@@ -147,7 +148,7 @@ const uploadSong = async (req, res) => {
 const deleteSong = async (id) => {
     const database = await getConnection();
     console.log("Deleting " + id)
-    await database.collection("t").deleteOne({_id: ObjectId(id)});    
+    await database.collection(MONGO_DATABASE).deleteOne({_id: ObjectId(id)});    
 }
 
 // add a song to the db
@@ -162,7 +163,7 @@ const addSong = async (name, artist, album, duration, objectID) => {
         "objectID" : objectID
     }
     console.log("Adding " + name + ", " + artist + ", " + album +","+ duration +","+ objectID)
-    await database.collection("library").insertOne(songRecord);    
+    await database.collection(MONGO_LIBRARY).insertOne(songRecord);    
 }
 
 // these are the routes for the backend APIs
