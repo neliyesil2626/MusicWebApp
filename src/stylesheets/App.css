@@ -9,6 +9,14 @@ html, body {
   color: #ECF2F8;
   font-family:'Space Mono', Space, monospace;
 }
+Text {
+  color: #ECF2F8;
+  font-family:'Space Mono', Space, monospace;
+}
+em{
+  color: #FB4C81;
+  font-style: normal;
+}
 
 button {
   background: #FB4C81;
@@ -89,41 +97,7 @@ input:-webkit-autofill{
   color: red
 }
 
-#timestamp {
-  display: inline-block;
-  grid-template-columns: 1fr 1fr;
-}
 
-#progressbar-container {
-  display: inline-block;
-  height: 6px;
-  width: 700px;
-  background-color: #3A3E43;
-  margin-bottom: 1em;
-}
-#progressbar {
-  position: absolute;
-  height: 100%;
-  width: 0%;
-  background-color: #FB4C81;
-}
-
-em{
-  color: #FB4C81;
-  font-style: normal;
-}
-
-#bottombar {
-  background-color: #0D1117;
-  overflow: hidden;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  padding-top: 1em;
-}
-#player {
-  margin: 0 auto;
-}
 
 
 #pagecontent {
@@ -133,10 +107,5 @@ em{
 }
 
 /* fix the way this is calculated*/
-#songtitle {
-  margin-left: 1em;
-  margin-top: 7px;
-  position:absolute;
-  width: fit-content;
-}
+
 

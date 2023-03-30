@@ -4,7 +4,11 @@ import fastForwardpng from './assets/Fast Forward.png';
 import playpng from './assets/Play.png';
 import pausepng from './assets/Pause.png';
 
+import { HStack, Box, Text, VStack, Center} from '@chakra-ui/react'
+import { COLOR } from './ChakraTheme';
+
 const BUTTON_SIZE = 40;
+const PROGRESS_WIDTH = 500; //width of the progress bar in px
 
 export const formatTime = (seconds) => {
     let minutes = Math.floor(seconds/60)
@@ -19,7 +23,7 @@ export const formatTime = (seconds) => {
     return time
   }
 export const formatProgress = (currentTime, duration) => {
-    let progress = {width: currentTime/duration*100+'%'}
+    let progress = {width: currentTime/duration*PROGRESS_WIDTH+'px'}
     return progress
   }
 
@@ -96,18 +100,37 @@ const Player = (song) => {
       song.prev()
     }
     return (
-      <div id="player" className="centered">
-        <img src={rewindpng} alt="rewindbutton" onClick={() => {prevSong()}} style={{width: BUTTON_SIZE}}/>
-        <img src={playpng} alt="playpausebutton" onClick={playPause} id="playpausebutton" style={{width: BUTTON_SIZE}}/>
-        <img src={fastForwardpng} alt="fastforwardbutton" onClick={() => {nextSong()}} style={{width: BUTTON_SIZE}}/>
-        <label id="songtitle">{song.name}</label>
-        <br></br>
-        <div id="timestamp"><label>{formatTime(timeStamp)}/{formatTime(timeDuration)}</label></div>
-        <div id="progressbar-container">
-          <span id="progressbar" style={formatProgress(timeStamp, timeDuration)}></span>
-        </div>
+      <Box
+        w='full'
+        bg='gray.900'
+        overflow='hidden'
+        position='fixed'
+        bottom='0'
+        p='0'
+      >
+        <HStack id="mediabuttons"
+          marginTop='10px'
+          marginLeft='22.5vw'
+          w='33vw'
+        >
+          <img src={rewindpng} alt="rewindbutton" onClick={() => {prevSong()}} style={{width: BUTTON_SIZE}}/>
+          <img src={playpng} alt="playpausebutton" onClick={playPause} id="playpausebutton" style={{width: BUTTON_SIZE}}/>
+          <img src={fastForwardpng} alt="fastforwardbutton" onClick={() => {nextSong()}} style={{width: BUTTON_SIZE}}/>
+          <HStack>
+            <Text id="songtitle">{song.name}</Text>
+            <Text id="songalbum" color={COLOR.secondaryFont}> - {song.album}</Text>
+          </HStack>
+        </HStack>
+       <Center><HStack>
+          <HStack id="timestamp">
+            <Text>{formatTime(timeStamp)}</Text><Text color={COLOR.secondaryFont}>/</Text><Text color={COLOR.secondaryFont}>{formatTime(timeDuration)}</Text>
+          </HStack>
+          <Box id="progressbar-container" bg={COLOR.progressBar} w='50vw' h='7px' borderRadius='3px'>
+            <Box id="progressbar" h='full' w={(timeStamp/timeDuration)*100+'%'} bg={COLOR.pink} borderRadius='3px'></Box>
+          </Box>
+        </HStack></Center>
         
-      </div>
+      </Box>
     )
   }
 export default Player

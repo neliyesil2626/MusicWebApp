@@ -1,5 +1,8 @@
 import React,{useState} from 'react';
 
+import { Text, Center, Heading, Button, VStack, Input} from '@chakra-ui/react';
+import { COLOR } from './ChakraTheme';
+
   //got this from: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
   async function addSong(newSong) {
     //downloadFile(mp3File, "songtest.mp3")
@@ -96,13 +99,13 @@ import React,{useState} from 'react';
       })
       }
     } 
-    return <div style={{width:"fit-content"}}>
-      <h1>o Add Song</h1>
-      <div><input type="text" name="songTitle" placeholder="Title" onChange={event => setTitle(event.target.value)}></input></div>
-      <div><input type="text" name="songArtist" placeholder="Artist" onChange={event => setArtist(event.target.value)}></input></div>
-      <div><input type="text" name="songAlbum" placeholder="Album" onChange={event => setAlbum(event.target.value)}></input></div>
-      <div><input id="upload" type="file" accept=".mp3" placeholder="Upload File" onChange={event => onUpload(event.target.value)}></input></div>
-      <div><center><button onClick={onSubmit}>addSong</button></center><p id="validupdateprompt">{validUploadPrompt}</p></div>
-    </div>
+    return <VStack paddingLeft='calc(50vw - 12rem - 255px)'  >
+      <Heading m='20px'>o Add Song</Heading>
+      <Input type="text" name="songTitle" placeholder="Title" onChange={event => setTitle(event.target.value)} borderColor={COLOR.secondaryFont} w='24rem'></Input>
+      <Input type="text" name="songArtist" placeholder="Artist" onChange={event => setArtist(event.target.value)} borderColor={COLOR.secondaryFont}></Input>
+      <Input type="text" name="songAlbum" placeholder="Album" onChange={event => setAlbum(event.target.value)} borderColor={COLOR.secondaryFont}></Input>
+      <Input id="upload" type="file" accept=".mp3" placeholder="Upload File" onChange={event => onUpload(event.target.value)} border='none'></Input>
+      <div><Center><Button onClick={onSubmit} bg={COLOR.pink} _hover={{ bg: COLOR.pinkHover }}>addSong</Button></Center><Text id="validupdateprompt">{validUploadPrompt}</Text></div>
+    </VStack>
   }
   export default SongAdder

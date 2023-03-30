@@ -1,7 +1,8 @@
-import './stylesheets/App.css';
-import './stylesheets/SideMenu.css';
-import './stylesheets/Login.css';
-import './stylesheets/Library.css';
+// import './stylesheets/App.css';
+// import './stylesheets/SideMenu.css';
+// import './stylesheets/Login.css';
+// import './stylesheets/Library.css';
+// import './stylesheets/Player.css';
 
 import Pages from './PageEnums.js';
 import Player from './Player.js';
@@ -9,7 +10,9 @@ import SideMenu from './SideMenu.js';
 import SongAdder from './SongAdder.js';
 import Library from './Library.js';
 import LogInSignUp from './LogInSignUp.js';
+import {theme, COLOR} from './ChakraTheme.js';
 import React,{useState, useEffect} from 'react';
+import { ChakraProvider, Flex, Button} from '@chakra-ui/react';
 
 const fetchData = async (url) => {
   fetch('/library').then(
@@ -137,26 +140,49 @@ function App() {
   let loginButtonText = (uid === undefined || uid == '') ? 'Log in' : userName+' ▼'
 
   return (
-    <div className="App">
-      <button id="loginbutton" onClick={() => {setPage(Pages.Login)}}>{loginButtonText}</button>
-      <SideMenu page={page} setPage={setPage}></SideMenu>
-      <div id="pagecontent">
-        {focusedPage} 
+    <ChakraProvider theme={theme}>
+      <div className="App">
+        <Flex>
+          <SideMenu page={page} setPage={setPage}></SideMenu>
+          <Flex id="pagecontent"
+            w='full'
+            overflow='hidden'
+            position='fixed'
+            left='255px'
+            p='0'
+          >
+            {focusedPage} 
+          </Flex>
+        </Flex>
+          <Player 
+            name={songs[curSongIndex].name}
+            album={songs[curSongIndex].album}
+            curSongID={songs[curSongIndex].objectID} 
+            next={incSong} 
+            prev={decSong} 
+            isLoading = {isLoadingSong}
+            load = {loadSong}
+            songs = {songs}
+            index = {curSongIndex}
+          />
       </div>
-      <div id="bottombar">
-        <Player 
-          name={songs[curSongIndex].name}
-          curSongID={songs[curSongIndex].objectID} 
-          next={incSong} 
-          prev={decSong} 
-          isLoading = {isLoadingSong}
-          load = {loadSong}
-          songs = {songs}
-          index = {curSongIndex}
-        />
-      </div>
-      
-    </div>
+      <Button id="loginbutton" onClick={() => {
+            if(page != Pages.Login){
+              setPage(Pages.Login)
+            } else {
+              setPage(Pages.Library)
+            }
+            
+          }}
+              bg={COLOR.pink}
+              _hover={{ bg: COLOR.pinkHover }}
+              pos='fixed'
+              top='20px'
+              right='20px'
+      >
+        {loginButtonText}
+      </Button>
+    </ChakraProvider>
   );
 }
 

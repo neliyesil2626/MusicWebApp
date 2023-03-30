@@ -1,0 +1,56 @@
+#timestamp {
+    float:left;
+    font-size: 0.85em;
+  }
+  
+  #progressbar-container {
+    position: absolute;
+    height: 6px;
+    width: 700px;
+    background-color: #3A3E43;
+    margin-bottom: 0;
+    left: 6em;
+  }
+  #progressbar {
+    position: absolute;
+    height: 6px;
+    width: 0%;
+    background-color: #FB4C81;
+    
+  }
+  #mediabuttons {
+    padding-right: 1em;
+    height: 40px;
+  }
+  
+  #songinfo {
+    position: absolute;
+    line-height: 1em;
+    margin-left: 1em;
+    vertical-align: middle;
+    text-align: center;
+    bottom: 0px;
+    left: 120px
+  }
+  #songtitle {
+    font-size: 1.2em;
+    width: min-content;
+  }
+  #songalbum {
+    font-size: 0.5;
+    color:#89929B;
+  }
+  #bottombar {
+    background-color: #0D1117;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding-top: 1em;
+  }
+  #player {
+    position: relative;
+    bottom:0;
+    margin: 0 auto;
+    height: 2em;
+  }
