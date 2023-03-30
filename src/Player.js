@@ -4,6 +4,8 @@ import fastForwardpng from './assets/Fast Forward.png';
 import playpng from './assets/Play.png';
 import pausepng from './assets/Pause.png';
 
+const BUTTON_SIZE = 40;
+
 export const formatTime = (seconds) => {
     let minutes = Math.floor(seconds/60)
     seconds = Math.floor(seconds % 60)
@@ -94,19 +96,17 @@ const Player = (song) => {
       song.prev()
     }
     return (
-      <div className="player">
-        <h1>Player</h1>
-        <div>
-          <img src={rewindpng} alt="rewindbutton" onClick={() => {prevSong()}}/>
-          <img src={playpng} alt="playpausebutton" onClick={playPause} id="playpausebutton"/>
-          <img src={fastForwardpng} alt="fastforwardbutton" onClick={() => {nextSong()}}/>
-          <label>{song.name}</label>
-          <br></br>
-          <div id="progressbar-container">
-            <span id="progressbar" style={formatProgress(timeStamp, timeDuration)}></span>
-          </div>
-          <label>{formatTime(timeStamp)}/{formatTime(timeDuration)}</label>
+      <div id="player" className="centered">
+        <img src={rewindpng} alt="rewindbutton" onClick={() => {prevSong()}} style={{width: BUTTON_SIZE}}/>
+        <img src={playpng} alt="playpausebutton" onClick={playPause} id="playpausebutton" style={{width: BUTTON_SIZE}}/>
+        <img src={fastForwardpng} alt="fastforwardbutton" onClick={() => {nextSong()}} style={{width: BUTTON_SIZE}}/>
+        <label id="songtitle">{song.name}</label>
+        <br></br>
+        <div id="timestamp"><label>{formatTime(timeStamp)}/{formatTime(timeDuration)}</label></div>
+        <div id="progressbar-container">
+          <span id="progressbar" style={formatProgress(timeStamp, timeDuration)}></span>
         </div>
+        
       </div>
     )
   }

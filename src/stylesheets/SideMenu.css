@@ -1,0 +1,10 @@
+#sidemenu {
+    font-size: large;
+    align-content: center;
+    background-color: #161B22;
+    width:12em;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    padding: 10px;
+  }

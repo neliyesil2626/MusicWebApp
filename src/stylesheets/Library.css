@@ -1,0 +1,20 @@
+table {
+    overflow: hidden;
+    width: 100%;
+}
+tbody {
+    margin: 0;
+    width: 100%;
+    overflow: hidden;
+}
+tbody>tr {
+    height: 4em;
+}
+tbody>tr:hover{
+    background-color: #3c424b;
+}
+
+td {
+    padding-right: 1em;
+    padding-left: 1em;
+}

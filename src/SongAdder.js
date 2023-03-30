@@ -96,13 +96,13 @@ import React,{useState} from 'react';
       })
       }
     } 
-    return <div>
-      <h1>Add Song</h1>
-      <div>Title: <input type="text" name="songTitle" onChange={event => setTitle(event.target.value)}></input></div>
-      <div>Artist: <input type="text" name="songArtist" onChange={event => setArtist(event.target.value)}></input></div>
-      <div>Album: <input type="text" name="songAlbum" onChange={event => setAlbum(event.target.value)}></input></div>
-      <div>Audio File: <input id="upload" type="file" accept=".mp3" onChange={event => onUpload(event.target.value)}></input></div>
-      <div><button onClick={onSubmit}>addSong</button><p id="validupdateprompt">{validUploadPrompt}</p></div>
+    return <div style={{width:"fit-content"}}>
+      <h1>o Add Song</h1>
+      <div><input type="text" name="songTitle" placeholder="Title" onChange={event => setTitle(event.target.value)}></input></div>
+      <div><input type="text" name="songArtist" placeholder="Artist" onChange={event => setArtist(event.target.value)}></input></div>
+      <div><input type="text" name="songAlbum" placeholder="Album" onChange={event => setAlbum(event.target.value)}></input></div>
+      <div><input id="upload" type="file" accept=".mp3" placeholder="Upload File" onChange={event => onUpload(event.target.value)}></input></div>
+      <div><center><button onClick={onSubmit}>addSong</button></center><p id="validupdateprompt">{validUploadPrompt}</p></div>
     </div>
   }
   export default SongAdder

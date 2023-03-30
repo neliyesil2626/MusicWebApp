@@ -1,5 +1,11 @@
-import './App.css';
+import './stylesheets/App.css';
+import './stylesheets/SideMenu.css';
+import './stylesheets/Login.css';
+import './stylesheets/Library.css';
+
+import Pages from './PageEnums.js';
 import Player from './Player.js';
+import SideMenu from './SideMenu.js';
 import SongAdder from './SongAdder.js';
 import Library from './Library.js';
 import LogInSignUp from './LogInSignUp.js';
@@ -50,6 +56,8 @@ function App() {
   const [refresh, setRefresh] = useState(false) //used to detect when 
   const [uid, setUid] = useState("")
   const [userName, setUsername] = useState("")
+  const [page, setPage] = useState(Pages.Library);
+
   React.useEffect(() => { //set variables when song info is retrieved from backend.
     console.log("app is fetching data...")
     fetch('/library').then(
@@ -58,6 +66,10 @@ function App() {
       setSongs(value)
     });
   }, [refresh] );
+
+  React.useEffect(() => { //set variables when song info is retrieved from backend.
+    console.log("state changed to: " + page)
+  }, [page] );
 
   const incSong = () => {
     let nextSongIndex = curSongIndex + 1
@@ -87,24 +99,63 @@ function App() {
    */
   if(songs.length == 0 || typeof songs == Promise){ 
     return <div className="App">
+            <div id="sidemenu">
+              <SideMenu page={page} setPage={setPage}></SideMenu>
+            </div>
+            <div id="pagecontent">
               <SongAdder refresh={refresh} setRefresh={setRefresh}/>
+            </div>
            </div>
   }
+
+  let focusedPage
+  switch(page) {
+    case 0:
+      // Library
+      focusedPage = <Library setIndex={setCurSongIndex} songs={songs} setSongs={setSongs}/>
+      break;
+    case 1:
+      // AddSong
+      focusedPage = <SongAdder refresh={refresh} setRefresh={setRefresh}/>
+      break;
+    case 2:
+      //CreatePlaylist
+      focusedPage = <LogInSignUp uid={uid} setUid={setUid} userName={userName} setUsername={setUsername}></LogInSignUp>
+      break;
+    case 3:
+      //Login
+      focusedPage = <LogInSignUp uid={uid} setUid={setUid} userName={userName} setUsername={setUsername}></LogInSignUp>
+      break;
+    case 4:
+      //playlist
+      focusedPage = <Library setIndex={setCurSongIndex} songs={songs} setSongs={setSongs}/>
+      break;
+    default:
+      // code block
+  }
+
+  let loginButtonText = (uid === undefined || uid == '') ? 'Log in' : userName+' ▼'
+
   return (
     <div className="App">
-      <LogInSignUp uid={uid} setUid={setUid} userName={userName} setUsername={setUsername}></LogInSignUp>
-      <SongAdder refresh={refresh} setRefresh={setRefresh}/>
-      <Library setIndex={setCurSongIndex} songs={songs} setSongs={setSongs}/>
-      <Player 
-        name={songs[curSongIndex].name}
-        curSongID={songs[curSongIndex].objectID} 
-        next={incSong} 
-        prev={decSong} 
-        isLoading = {isLoadingSong}
-        load = {loadSong}
-        songs = {songs}
-        index = {curSongIndex}
-      />
+      <button id="loginbutton" onClick={() => {setPage(Pages.Login)}}>{loginButtonText}</button>
+      <SideMenu page={page} setPage={setPage}></SideMenu>
+      <div id="pagecontent">
+        {focusedPage} 
+      </div>
+      <div id="bottombar">
+        <Player 
+          name={songs[curSongIndex].name}
+          curSongID={songs[curSongIndex].objectID} 
+          next={incSong} 
+          prev={decSong} 
+          isLoading = {isLoadingSong}
+          load = {loadSong}
+          songs = {songs}
+          index = {curSongIndex}
+        />
+      </div>
+      
     </div>
   );
 }

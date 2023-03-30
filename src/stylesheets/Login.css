@@ -1,0 +1,10 @@
+.logincomponent {
+    width: fit-content;
+}
+
+#loginbutton {
+    float: right;
+    position: absolute;
+    right: 1em;
+    top: 1em;
+}

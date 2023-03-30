@@ -80,14 +80,14 @@ const SignUp = (props) => {
       signUpUser(username, email, password)
       setCreateUser(true);
     }}>Sign Up</button>
-    let logInPrompt = <p>Have an account?<em id="switchToLogIn" onClick={() => {props.setSignUp(false)}}> Log in here</em></p>
+    let logInPrompt = <p>Have an account?<em id="switchToLogIn" onClick={() => {props.setSignUp(false)}}> Log in </em></p>
   
-    return <div>
+    return <div className="logincomponent">
     <h1>Sign Up</h1>
-      <div>Username: <input type="text" name="logInUserName" onChange={event => setUsername(event.target.value)}></input></div>
-      <div>Email: <input type="text" name="logInEmail" onChange={event => setEmail(event.target.value)}></input></div>
-      <div>Password: <input type="text" name="logInPassword" onChange={event => setPassword(event.target.value)}></input></div>
-      <div>{button}{logInPrompt}</div>
+      <div><input type="text" name="logInUserName" placeholder="Username" onChange={event => setUsername(event.target.value)}></input></div>
+      <div><input type="text" name="logInEmail" placeholder="Email" onChange={event => setEmail(event.target.value)}></input></div>
+      <div><input type="text" name="logInPassword" placeholder="Password" onChange={event => setPassword(event.target.value)}></input></div>
+      <div><center>{button}</center>{logInPrompt}</div>
   </div>
   }
 
@@ -107,15 +107,6 @@ const Login = (props) => {
         console.log(error)
       });
     }
-  
-    let button = (props.uid === undefined || props.uid == '') ?
-     <button id="login" onClick={loginOnClick}>Log in</button> : 
-     <button id="signout" onClick={signoutOnClick}>Sign Out</button>
-    let loggedinusername = (props.uid === undefined || props.uid == '') ?
-      <div id="loggedinusername"></div> :
-      <div id="loggedinusername"><p>Logged in as: {props.userName}</p></div>
-    let signUpPrompt = (props.uid === undefined || props.uid == '') ?
-      <p>no account? <em id="switchToSignUp" onClick={() => {props.setSignUp(true)}}>click here to sign up</em></p> : <p></p>
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const uid = user.uid
@@ -127,13 +118,28 @@ const Login = (props) => {
         // User is signed out
       }
     });
-    return <div>
-      <h1>Login</h1>
-        {loggedinusername}
-        <div>Email: <input type="text" name="logInEmail" onChange={event => setEmail(event.target.value)}></input></div>
-        <div>Password: <input type="text" name="logInPassword" onChange={event => setPassword(event.target.value)}></input></div>
-        <div id="loginsignout">{button}{signUpPrompt}</div>
-    </div>
+
+    // if there is no user logged in
+    if(props.uid === undefined || props.uid == ''){
+      let button = <button id="submitloginbutton" onClick={loginOnClick}>Log in</button> 
+      let signUpPrompt = <p>No account? <em id="switchToSignUp" onClick={() => {props.setSignUp(true)}}>Sign up</em></p>
+      return <div className="logincomponent">
+        <h1>Login</h1>
+          <div><input type="text" name="logInEmail" placeholder="Email" onChange={event => setEmail(event.target.value)}></input></div>
+          <div><input type="text" name="logInPassword" placeholder="Password" onChange={event => setPassword(event.target.value)}></input></div>
+          <div id="loginsignout"><center>{button}</center>{signUpPrompt}</div>
+      </div>
+    } 
+
+    // the user is logged in:
+    else {
+      let button = <button id="signout" onClick={signoutOnClick}>Sign Out</button>
+      return <div className="logincomponent">
+        <h1>Login</h1>
+          <p>You are already Logged in.</p>
+          <div id="loginsignout"><center>{button}</center></div>
+      </div>
+    }
   }
   
   const LogInSignUp = (props) => {

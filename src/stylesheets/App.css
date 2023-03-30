@@ -1,0 +1,142 @@
+
+* {
+  box-sizing: border-box;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #21262D;
+  color: #ECF2F8;
+  font-family:'Space Mono', Space, monospace;
+}
+
+button {
+  background: #FB4C81;
+  border: 2px;
+  border-radius: 4px;
+  
+  color: #ECF2F8;
+  font-family : inherit;
+  font-size: 1em;
+
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+button:hover {
+  background: #aa306d;
+}
+
+input:-webkit-autofill,
+input[type=text] {
+  background-color: inherit;
+  border-style: solid;
+  border-color: #3c424b;
+  border-width: 1px;
+  border-radius: 5px;
+
+  color: inherit;
+  font-family : inherit;
+  font-size: 1em;
+  padding: 5px;
+  margin: 5px;
+  width: 20em;
+  min-width: none;
+}
+input:focus {
+  outline: none;
+}
+
+/* including this to get of the weird autofill text input styling issue */
+/* https://stackoverflow.com/questions/2781549/removing-input-background-colour-for-chrome-autocomplete */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px #21262D inset !important;
+    caret-color: #ECF2F8;
+}
+input:-webkit-autofill{
+  -webkit-text-fill-color: #ECF2F8 !important;
+}
+
+
+.App{
+  height: 100%;
+}
+
+.songlist {
+  border-collapse: collapse;
+}
+.artist,.number {
+  color: #89929B;
+}
+
+.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+#listheaders {
+  color: #89929B;
+  border-bottom: 1px solid #89929B;
+}
+
+#validupdateprompt {
+  color: red
+}
+
+#timestamp {
+  display: inline-block;
+  grid-template-columns: 1fr 1fr;
+}
+
+#progressbar-container {
+  display: inline-block;
+  height: 6px;
+  width: 700px;
+  background-color: #3A3E43;
+  margin-bottom: 1em;
+}
+#progressbar {
+  position: absolute;
+  height: 100%;
+  width: 0%;
+  background-color: #FB4C81;
+}
+
+em{
+  color: #FB4C81;
+  font-style: normal;
+}
+
+#bottombar {
+  background-color: #0D1117;
+  overflow: hidden;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding-top: 1em;
+}
+#player {
+  margin: 0 auto;
+}
+
+
+#pagecontent {
+  overflow: hidden;
+  margin-left: 14em;
+  margin-right: 1em;
+}
+
+/* fix the way this is calculated*/
+#songtitle {
+  margin-left: 1em;
+  margin-top: 7px;
+  position:absolute;
+  width: fit-content;
+}
+
