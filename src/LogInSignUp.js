@@ -124,6 +124,7 @@ const Login = (props) => {
         const uid = user.uid
         const username = auth.currentUser.displayName
         console.log("authentication changed to: "+auth.currentUser.displayName)
+        console.log("uid = "+uid)
         props.setUid(uid)
         props.setUsername(username)
       } else {

@@ -40,6 +40,13 @@ const getAllSongs = async () => {
     return values;
 }
 
+const getUserPlayLists = async (uID) => {
+    const database = await getConnection();
+    var query = {userID: uID};
+    const values = await database.collection(MONGO_PLAYLISTS).find(query).toArray();
+    return values;
+}
+
 const listSongs = async () => {
     const database = await getConnection();
     const values = await database.collection(MONGO_LIBRARY).find({}).toArray();
@@ -190,12 +197,12 @@ const editSong = async (name, artist, album, duration, objectID) => {
     return true;
 }
 
-const createPlaylist = async (name, userid, songs) => {
+const createPlaylist = async (name, userID, songs) => {
     const database = await getConnection();
     console.log("connection = "+database);
     const newPlaylist = {
         'name': name,
-        'userID': userid,
+        'userID': userID,
         'songs': songs
     }
     await database.collection(MONGO_PLAYLISTS).insertOne(newPlaylist);
@@ -274,6 +281,26 @@ const routes = [
                 res.status(200).json({ status: "ok"});
             else 
                 res.status(400).json({status: "not found"});
+        },
+        method: 'post',
+        path: '/createPlaylist',
+        handler: async (req, res) => {
+            const { name, userID, songs} = req.body;
+            await createPlaylist(name, userID, songs);
+            res.status(200).json({ status: "ok"});
+        },
+        method: 'get',
+        path: '/userPlaylists/:userID',
+        handler: async (req, res) => {
+            const userID = req.params.userID
+            let values = await getUserPlayLists(userID);
+            console.log(values)
+            res.set({
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin' : '*', 
+                'Access-Control-Allow-Credentials' : true
+            });
+            res.status(200).json(values);
         },
     },
 ];

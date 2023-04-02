@@ -13,10 +13,11 @@ import { Text,
   Button,
   MenuGroup,
   VStack,
-  HStack
+  HStack,
+  CloseButton
 } from '@chakra-ui/react'
 import {COLOR} from './ChakraTheme.js';
-import React,{useState,useEffect} from 'react';
+import React,{useState} from 'react';
   //using tempProps to prevent App.js:111 Uncaught TypeError: Cannot add property onClick, object is not extensible
 
   async function editSong(newSong) {
@@ -42,20 +43,18 @@ import React,{useState,useEffect} from 'react';
     onChange={event => set(event.target.value)} 
     borderColor={COLOR.secondaryFont} 
     id={type+'edit'+objectID}
-    ml='20px'
     h='2em'
     w='12em'></Input>
-  <Button onClick={()=>{
+  <CloseButton onClick={()=>{
     document.getElementById(type+'edit'+objectID).value = '';
     set(attribute);
   }}
-  w='0.5em'
-  fontSize='1.5em'
-  borderRadius='full'
+  w='2em'
+  h='2em'
   bg='transparent'
   color={COLOR.secondaryFont}
   _hover={{ color: COLOR.primaryFont, bg:COLOR.bg}}
-  >×</Button>
+  ></CloseButton>
 </HStack>
  }
  const songEditMenu = (song, setTitle, setAlbum, setArtist, onSubmit) => {

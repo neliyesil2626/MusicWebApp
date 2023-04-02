@@ -7,11 +7,25 @@ import { Text, VStack, Center , Image} from '@chakra-ui/react'
 /*
  * 
  */
+const playlistButton = (playlistName, i) => {
+    return <Text key={'playlist'+i} 
+                color={COLOR.secondaryFont}
+                pl='1em'
+            >
+                {playlistName}
+           </Text>
+}
 const SideMenu = (props) => {
     let addSongButton = <Text onClick={() => {props.setPage(Pages.AddSong)}} className='menuitem' _hover={{ cursor: 'pointer', color: COLOR.secondaryFont}}>o Add Song</Text>
     let createPlaylistButton = <Text onClick={() => {props.setPage(Pages.CreatePlaylist)}} className='menuitem' _hover={{ cursor: 'pointer', color: COLOR.secondaryFont}}>+ Create Playlist</Text>
     let libraryButton = <Text onClick={() => {props.setPage(Pages.Library)}} className='menuitem' _hover={{ cursor: 'pointer', color: COLOR.secondaryFont}}>= Library</Text> 
-
+    console.log("playlists = ")
+    console.log(props.playlists)
+    let playlists = (props.playlists !== undefined) ? props.playlists.map((playlist, i)=>{
+        console.log("playlistname = "+playlist.name)
+        return playlistButton(playlist.name, i)
+    }) : <Text>hi</Text>
+    console.log(playlists)
     return <VStack id="sidemenu"
                     w="255px"
                     minHeight="97vh"
@@ -24,6 +38,7 @@ const SideMenu = (props) => {
             {addSongButton}
             {createPlaylistButton}
             {libraryButton}
+            {playlists}
             </VStack>
         </VStack>
 }

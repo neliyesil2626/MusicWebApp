@@ -1,9 +1,3 @@
-// import './stylesheets/App.css';
-// import './stylesheets/SideMenu.css';
-// import './stylesheets/Login.css';
-// import './stylesheets/Library.css';
-// import './stylesheets/Player.css';
-
 import Pages from './PageEnums.js';
 import Player from './Player.js';
 import SideMenu from './SideMenu.js';
@@ -55,11 +49,12 @@ const downloadFile = (file, fileName) => {
 function App() {
   const [curSongIndex, setCurSongIndex] = useState(0)//index of the current song playing in the mongodb
   const [songs, setSongs] = useState([]) //list of song objects from t.library in mongodb
+  const [playlists, setPlaylists] = useState([])
   const [isLoadingSong, setLoadingSong] = useState(false) //used when the song ends and the next song is starting
   const [refresh, setRefresh] = useState(false) //used to detect when 
   const [uid, setUid] = useState("")
   const [userName, setUsername] = useState("")
-  const [page, setPage] = useState(Pages.Library);
+  const [page, setPage] = useState(Pages.Library)
 
   React.useEffect(() => { //set variables when song info is retrieved from backend.
     console.log("app is fetching data...")
@@ -69,6 +64,16 @@ function App() {
       setSongs(value)
     });
   }, [refresh] );
+  React.useEffect(() => {
+    if(uid !== ""){
+      fetch('/userPlaylists/'+uid).then(
+        (response) => response.json()
+      ).then((value) => {
+        setPlaylists(value)
+      });
+    }
+  }, [uid] );
+  
 
   React.useEffect(() => { //set variables when song info is retrieved from backend.
     console.log("state changed to: " + page)
@@ -143,7 +148,7 @@ function App() {
     <ChakraProvider theme={theme}>
       <div className="App">
         <Flex>
-          <SideMenu page={page} setPage={setPage}></SideMenu>
+          <SideMenu page={page} setPage={setPage} playlists={playlists}></SideMenu>
           <Flex id="pagecontent"
             w='full'
             h='full'
