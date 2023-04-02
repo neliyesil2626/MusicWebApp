@@ -14,7 +14,7 @@ const SideMenu = (props) => {
 
     return <VStack id="sidemenu"
                     w="255px"
-                    h="97vh"
+                    minHeight="97vh"
                     p='15px'
                     bg={COLOR.bg2}
                     fontSize='1.3em'

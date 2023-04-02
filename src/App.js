@@ -146,9 +146,10 @@ function App() {
           <SideMenu page={page} setPage={setPage}></SideMenu>
           <Flex id="pagecontent"
             w='full'
+            h='full'
+            position='relative'
             overflow='hidden'
-            position='fixed'
-            left='255px'
+            left='0'
             p='0'
           >
             {focusedPage} 

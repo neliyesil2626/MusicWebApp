@@ -1,4 +1,5 @@
 import { extendTheme } from '@chakra-ui/react'
+import { color } from 'framer-motion'
 
 export const COLOR = {
   pink: 'cat.100',
@@ -31,6 +32,15 @@ export const theme = extendTheme({
       body: {
         bg: COLOR.bg,
         color: COLOR.primaryFont,
+      },
+      '&::-webkit-scrollbar': {
+        width: '8px',
+        borderRadius: 'full',
+        backgroundColor: 'transparent',
+      },
+      '&::-webkit-scrollbar-thumb': {
+        borderRadius: '8px',
+        backgroundColor: COLOR.bgHover,
       },
       text: {
         

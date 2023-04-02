@@ -8,6 +8,7 @@ import multer from 'multer';
 const MONGO_URL = 'mongodb://127.0.0.1:27017';
 const MONGO_DATABASE = "t"; // we're using the default test database
 const MONGO_LIBRARY = "library";
+const MONGO_PLAYLISTS = "playlists";
 
 
 let dbClient = null;
@@ -166,6 +167,43 @@ const addSong = async (name, artist, album, duration, objectID) => {
     await database.collection(MONGO_LIBRARY).insertOne(songRecord);    
 }
 
+const editSong = async (name, artist, album, duration, objectID) => {
+    const database = await getConnection();
+    console.log("connection = "+database);
+    var query = {_id: ObjectId(objectID)};
+    let song = await database.collection(MONGO_LIBRARY).findOne(query);
+    console.log('song = ');
+    console.log(song);
+    if(song === null){
+        console.log("song is of type: "+typeof song)
+        return false;
+    }
+
+    name = (name === undefined || name === '')? song.name : name;
+    artist = (artist === undefined || artist === '')? song.artist : artist;
+    album = (album === undefined || album === '')? song.album : album;
+    duration = (duration === undefined || duration === '')? song.duration : duration;
+    
+    var newvalues = { $set: { name: name, artist: artist, album: album, duration: duration} };
+    console.log('new song = '); console.log(song);
+    await database.collection(MONGO_LIBRARY).updateOne(query, newvalues);
+    return true;
+}
+
+const createPlaylist = async (name, userid, songs) => {
+    const database = await getConnection();
+    console.log("connection = "+database);
+    const newPlaylist = {
+        'name': name,
+        'userID': userid,
+        'songs': songs
+    }
+    await database.collection(MONGO_PLAYLISTS).insertOne(newPlaylist);
+}
+const addSongToPlaylist = async (playlistID, song) => {
+
+}
+
 // these are the routes for the backend APIs
 const routes = [
     {
@@ -222,6 +260,20 @@ const routes = [
             const { _id } = req.body;
             await deleteSong(_id);
             res.status(200).json({ status: "ok"});
+        },
+        method: 'post',
+        path: '/editsong',
+        handler: async (req, res) => {
+            const { id, name, artist, album, duration} = req.body;
+            let status = await editSong(name, artist, album, duration, id);
+            res.set({
+                'Access-Control-Allow-Origin' : '*', 
+                'Access-Control-Allow-Credentials' : true
+            });
+            if(status)
+                res.status(200).json({ status: "ok"});
+            else 
+                res.status(400).json({status: "not found"});
         },
     },
 ];
