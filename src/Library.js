@@ -1,5 +1,6 @@
-import { Text,
-    Table,
+import { 
+  Text,
+  Table,
   Thead,
   Tbody,
   Tr,
@@ -103,6 +104,10 @@ import React,{useState} from 'react';
       editSong(newSong)
 
     }
+    //TODO: change this to update the proper info for playlists.
+    const rowOnClick = (i) => {
+      props.setIndex(i);
+    }
 
       tableHeaders = <Tr color={COLOR.secondaryFont} borderBottom='1px' borderColor={COLOR.secondaryFont} >
                          <Td key="hnumber">#</Td>
@@ -116,10 +121,10 @@ import React,{useState} from 'react';
         _hover={{ bg: COLOR.bgHover }}
         h='2em'
       >
-          <Td key={"number"} className="number" color={COLOR.secondaryFont} w='1em' onClick={() => { props.setIndex(i)}}>{i+1}</Td>
-          <Td key={"name"} className="name" paddingLeft='0' fontSize='1.2em' onClick={() => { props.setIndex(i)}}>{song.name}</Td>
-          <Td key={"artist"} className="artist" onClick={() => { props.setIndex(i)}}>{song.artist}</Td> 
-          <Td key={"album"} className="album" onClick={() => { props.setIndex(i)}}>{song.album}</Td>
+          <Td key={"number"} className="number" color={COLOR.secondaryFont} w='1em' onClick={() => { rowOnClick(i)}}>{i+1}</Td>
+          <Td key={"name"} className="name" paddingLeft='0' fontSize='1.2em' onClick={() => { rowOnClick(i)}}>{song.name}</Td>
+          <Td key={"artist"} className="artist" onClick={() => { rowOnClick(i)}}>{song.artist}</Td> 
+          <Td key={"album"} className="album" onClick={() => { rowOnClick(i)}}>{song.album}</Td>
           <Td key={"editSong"} className="editsong" >{songEditMenu(song, setNewTitle, setNewAlbum, setNewArtist, onSubmit)}</Td>
       </Tr>);
     return (<Box 
@@ -127,7 +132,7 @@ import React,{useState} from 'react';
               dispaly='inline-block'
               overflowY='auto'
               >
-              <Heading m='20px'>Library</Heading>
+              <Heading m='20px'>{props.header}</Heading>
               
               <Table className="songlist" 
                 variant='unstyled'
@@ -141,8 +146,6 @@ import React,{useState} from 'react';
                   {tableHeaders}
                 </Thead>
                 <Tbody id="songlist">
-                 {tableBody}
-                 {tableBody}
                  {tableBody}
                 </Tbody>
               </Table>

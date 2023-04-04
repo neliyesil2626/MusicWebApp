@@ -7,12 +7,16 @@ import { Text, VStack, Center , Image} from '@chakra-ui/react'
 /*
  * 
  */
-const playlistButton = (playlistName, i) => {
+const playlistButton = (playlist, i, setPlaylist, setPage) => {
     return <Text key={'playlist'+i} 
                 color={COLOR.secondaryFont}
                 pl='1em'
+                onClick={()=>{
+                    setPlaylist(playlist)
+                    setPage(Pages.Playlist)
+                }}
             >
-                {playlistName}
+                {playlist.name}
            </Text>
 }
 const SideMenu = (props) => {
@@ -23,7 +27,7 @@ const SideMenu = (props) => {
     console.log(props.playlists)
     let playlists = (props.playlists !== undefined) ? props.playlists.map((playlist, i)=>{
         console.log("playlistname = "+playlist.name)
-        return playlistButton(playlist.name, i)
+        return playlistButton(playlist, i, props.setPlaylist, props.setPage)
     }) : <Text>hi</Text>
     console.log(playlists)
     return <VStack id="sidemenu"

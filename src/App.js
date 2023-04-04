@@ -50,6 +50,7 @@ function App() {
   const [curSongIndex, setCurSongIndex] = useState(0)//index of the current song playing in the mongodb
   const [songs, setSongs] = useState([]) //list of song objects from t.library in mongodb
   const [playlists, setPlaylists] = useState([])
+  const [playlist, setPlaylist] = useState()
   const [isLoadingSong, setLoadingSong] = useState(false) //used when the song ends and the next song is starting
   const [refresh, setRefresh] = useState(false) //used to detect when 
   const [uid, setUid] = useState("")
@@ -118,25 +119,28 @@ function App() {
 
   let focusedPage
   switch(page) {
-    case 0:
+    case Pages.Library:
       // Library
-      focusedPage = <Library setIndex={setCurSongIndex} songs={songs} setSongs={setSongs}/>
+      focusedPage = <Library header='Library' setIndex={setCurSongIndex} songs={songs} setSongs={setSongs}/>
       break;
-    case 1:
+    case Pages.AddSong:
       // AddSong
       focusedPage = <SongAdder refresh={refresh} setRefresh={setRefresh}/>
       break;
-    case 2:
+    case Pages.CreatePlaylist:
       //CreatePlaylist
       focusedPage = <LogInSignUp uid={uid} setUid={setUid} userName={userName} setUsername={setUsername}></LogInSignUp>
       break;
-    case 3:
+    case Pages.Login:
       //Login
       focusedPage = <LogInSignUp uid={uid} setUid={setUid} userName={userName} setUsername={setUsername}></LogInSignUp>
       break;
-    case 4:
+    case Pages.Playlist:
       //playlist
-      focusedPage = <Library setIndex={setCurSongIndex} songs={songs} setSongs={setSongs}/>
+      let plSongs = songs.filter(song => playlist.songs.includes(song.objectID))
+      console.log('plSongs =' )
+      console.log(plSongs)
+      focusedPage = <Library header={playlist.name} setIndex={setCurSongIndex} songs={plSongs} setSongs={setSongs}/>
       break;
     default:
       // code block
@@ -148,7 +152,7 @@ function App() {
     <ChakraProvider theme={theme}>
       <div className="App">
         <Flex>
-          <SideMenu page={page} setPage={setPage} playlists={playlists}></SideMenu>
+          <SideMenu page={page} setPage={setPage} playlists={playlists} setPlaylist={setPlaylist}></SideMenu>
           <Flex id="pagecontent"
             w='full'
             h='full'
