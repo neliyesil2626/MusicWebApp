@@ -3,8 +3,11 @@ import rewindpng from './assets/Rewind.svg';
 import fastForwardpng from './assets/Fast Forward.svg';
 import playpng from './assets/Play.svg';
 import pausepng from './assets/Pause.svg';
+import looppng from './assets/LoopSong.svg';
+import shufflepng from './assets/ShufflePlay.svg';
+import queuepng from './assets/QueueSong.svg';
 
-import { HStack, Box, Text, VStack, Center, Image} from '@chakra-ui/react'
+import { HStack, Box, Text, VStack, Center, Image, Spacer} from '@chakra-ui/react'
 import { COLOR } from './ChakraTheme';
 
 const BUTTON_SIZE = 40;
@@ -108,14 +111,22 @@ const Player = (song) => {
         <HStack id="mediabuttons"
           marginTop='10px'
           marginLeft='22.5vw'
-          w='33vw'
+          w='54vw'
         >
           <Image src={rewindpng} alt="rewindbutton" onClick={() => {prevSong()}} style={{width: BUTTON_SIZE}}/>
           <Image src={playpng} alt="playpausebutton" onClick={playPause} id="playpausebutton" style={{width: BUTTON_SIZE}}/>
           <Image src={fastForwardpng} alt="fastforwardbutton" onClick={() => {nextSong()}} style={{width: BUTTON_SIZE}}/>
+          
           <HStack>
             <Text id="songtitle">{song.name}</Text>
             <Text id="songalbum" color={COLOR.secondaryFont}> - {song.album}</Text>
+          </HStack>
+          <Spacer />
+          <HStack 
+          float='left'>
+            <Image src={shufflepng} alt="shufflebutton" onClick={() => {}} style={{width: BUTTON_SIZE}}/>
+            <Image src={looppng} alt="fastforwardbutton" onClick={() => {}} style={{width: BUTTON_SIZE}}/>
+            <Image src={queuepng} alt="fastforwardbutton" onClick={() => {}} style={{width: BUTTON_SIZE}}/>
           </HStack>
         </HStack>
        <Center><HStack>
@@ -126,6 +137,7 @@ const Player = (song) => {
             <Box id="progressbar" h='full' w={(timeStamp/timeDuration)*100+'%'} bg={COLOR.pink} borderRadius='3px'></Box>
           </Box>
         </HStack></Center>
+        
         
       </Box>
     )
