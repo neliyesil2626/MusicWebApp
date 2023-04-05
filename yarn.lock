@@ -3226,6 +3226,11 @@
   "resolved" "https://registry.npmjs.org/@firebase/webchannel-wrapper/-/webchannel-wrapper-0.9.0.tgz"
   "version" "0.9.0"
 
+"@fontsource/montserrat@^4.5.14":
+  "integrity" "sha512-fTvrteVzuFUePhr4QYBGoK8G/YHLJ3IhF1HhKg0AxcFvZajJT7rM7ULdmKLSd2PkX44R3aaFZq1zDbmjbGGI+w=="
+  "resolved" "https://registry.npmjs.org/@fontsource/montserrat/-/montserrat-4.5.14.tgz"
+  "version" "4.5.14"
+
 "@fontsource/open-sans@^4.5.14":
   "integrity" "sha512-mBXIIETBlW8q/ocuUN0hyGow2iuf75hQEHQt8R/RJ/HcphVbLg8KB7pHYGbFGDqs75W+SWvTC7JkVeAjT65BuQ=="
   "resolved" "https://registry.npmjs.org/@fontsource/open-sans/-/open-sans-4.5.14.tgz"

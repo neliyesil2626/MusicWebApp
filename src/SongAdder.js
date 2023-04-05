@@ -1,7 +1,8 @@
 import React,{useState} from 'react';
 
-import { Text, Center, Heading, Button, VStack, Input} from '@chakra-ui/react';
+import { Text, Center, Heading, Button, VStack, Input, Image, Divider, Flex} from '@chakra-ui/react';
 import { COLOR } from './ChakraTheme';
+import logo from './assets/logo.svg'
 
   //got this from: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
   async function addSong(newSong) {
@@ -99,13 +100,28 @@ import { COLOR } from './ChakraTheme';
       })
       }
     } 
-    return <VStack paddingLeft='calc(50vw - 12rem - 255px)'  >
-      <Heading m='20px'>o Add Song</Heading>
-      <Input type="text" name="songTitle" placeholder="Title" onChange={event => setTitle(event.target.value)} borderColor={COLOR.secondaryFont} w='24rem'></Input>
-      <Input type="text" name="songArtist" placeholder="Artist" onChange={event => setArtist(event.target.value)} borderColor={COLOR.secondaryFont}></Input>
-      <Input type="text" name="songAlbum" placeholder="Album" onChange={event => setAlbum(event.target.value)} borderColor={COLOR.secondaryFont}></Input>
-      <Input id="upload" type="file" accept=".mp3" placeholder="Upload File" onChange={event => onUpload(event.target.value)} border='none'></Input>
-      <div><Center><Button onClick={onSubmit} bg={COLOR.pink} _hover={{ bg: COLOR.pinkHover }}>addSong</Button></Center><Text id="validupdateprompt">{validUploadPrompt}</Text></div>
+    return <Flex
+      position='relative'
+      paddingLeft='calc(50vw - 12rem - 16rem)'
+    >
+      
+      <VStack 
+      >
+      <Image src={logo} alt="logo" width='15rem' align='center'/>
+      <Divider 
+        top='9rem'
+        left='0rem'
+        w='100vw'
+        position='absolute'
+        borderColor={COLOR.secondaryFont}
+      ></Divider>
+      <Heading m='20px'>Add Song</Heading>
+      <Input type="text" name="songTitle" placeholder="Title" onChange={event => setTitle(event.target.value)} borderColor={COLOR.secondaryFont}w='24rem'></Input>
+      <Input type="text" name="songArtist" placeholder="Artist" onChange={event => setArtist(event.target.value)} borderColor={COLOR.secondaryFont}w='24rem'></Input>
+      <Input type="text" name="songAlbum" placeholder="Album" onChange={event => setAlbum(event.target.value)} borderColor={COLOR.secondaryFont}w='24rem'></Input>
+      <Input id="upload" type="file" accept=".mp3" placeholder="Upload File" onChange={event => onUpload(event.target.value)} border='none'w='24rem'></Input>
+      <Center><Button onClick={onSubmit} bg={COLOR.pink} _hover={{ bg: COLOR.pinkHover }}>addSong</Button></Center><Text id="validupdateprompt">{validUploadPrompt}</Text>
     </VStack>
+    </Flex>
   }
   export default SongAdder

@@ -1,4 +1,5 @@
 import { extendTheme } from '@chakra-ui/react'
+import Montserrat from '@fontsource/montserrat'
 import { color } from 'framer-motion'
 
 export const COLOR = {
@@ -10,6 +11,7 @@ export const COLOR = {
   bgHover: 'gray.600',
   primaryFont: 'gray.50',
   secondaryFont: 'gray.500',
+  tertiaryFont: 'gray.400',
   progressBar: 'progress.100',
 }
 export const theme = extendTheme({
@@ -24,8 +26,8 @@ export const theme = extendTheme({
     
   },
   fonts: {
-    heading: "'Space Mono', 'Space', 'monospace'",
-    body: "'Space Mono', 'Space', 'monospace'",
+    heading: "'Montserrat', sans-serif",
+    body: "'Montserrat', sans-serif",
   },
   styles: {
     global: (props) => ({

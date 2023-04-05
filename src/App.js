@@ -49,6 +49,7 @@ const downloadFile = (file, fileName) => {
 function App() {
   const [curSongIndex, setCurSongIndex] = useState(0)//index of the current song playing in the mongodb
   const [songs, setSongs] = useState([]) //list of song objects from t.library in mongodb
+  const [indexes, setIndexes] = useState([]);
   const [playlists, setPlaylists] = useState([])
   const [playlist, setPlaylist] = useState()
   const [isLoadingSong, setLoadingSong] = useState(false) //used when the song ends and the next song is starting
@@ -67,6 +68,7 @@ function App() {
   }, [refresh] );
   React.useEffect(() => {
     if(uid !== ""){
+      console.log("uid = " + uid)
       fetch('/userPlaylists/'+uid).then(
         (response) => response.json()
       ).then((value) => {
@@ -74,28 +76,50 @@ function App() {
       });
     }
   }, [uid] );
-  
 
   React.useEffect(() => { //set variables when song info is retrieved from backend.
     console.log("state changed to: " + page)
+    if(page === Pages.Library){
+      setIndexes(songs.map((song, i) => i));
+      setPlaylist([])
+    }
   }, [page] );
+  React.useEffect(()=>{
+    if(page !== Pages.Library && playlist !== [] && playlist.songs !== undefined){
+      let newIndexes = []
+      for(let i = 0; i < songs.length; i++){
+        if(playlist.songs.includes(songs[i].objectID)){
+          newIndexes.push(i)
+        }
+      }
+      setIndexes(newIndexes)
+      console.log('Indexes = ')
+      console.log(newIndexes)
+      setCurSongIndex(newIndexes[0])
+    }
+    console.log(indexes)
+    
+  }, [playlist])
 
   const incSong = () => {
-    let nextSongIndex = curSongIndex + 1
-    if(nextSongIndex  >= 4){
-      nextSongIndex = 0
-    }
-    setCurSongIndex(nextSongIndex)
-    console.log(nextSongIndex+" incremented song to: "+songs[nextSongIndex].name)
+      let nextSongIndex = indexes.indexOf(curSongIndex) + 1
+      if(nextSongIndex  >= indexes.length){
+        nextSongIndex = 0
+      }
+      setCurSongIndex(indexes[nextSongIndex])
+      console.log(nextSongIndex+" incremented song to: "+songs[nextSongIndex].name)
   }
 
   const decSong = () => {
-    let nextSongIndex = curSongIndex - 1
+    let nextSongIndex = indexes.indexOf(curSongIndex) - 1
     if(nextSongIndex < 0){
-      nextSongIndex = songs.length - 1
+      nextSongIndex = indexes.length - 1
     }
-    setCurSongIndex(nextSongIndex)
+    setCurSongIndex(indexes[nextSongIndex])
     console.log(nextSongIndex+" decremented song to: "+songs[nextSongIndex].name)
+  }
+  const setSong = (i) => {
+    setCurSongIndex(indexes[i])
   }
 
   const loadSong = () => {
@@ -107,7 +131,8 @@ function App() {
    * I added this conditional because I don't want to load the app unless the list of songs is loaded from the db. 
    */
   if(songs.length == 0 || typeof songs == Promise){ 
-    return <div className="App">
+    return <ChakraProvider theme={theme}>
+          <div className="App">
             <div id="sidemenu">
               <SideMenu page={page} setPage={setPage}></SideMenu>
             </div>
@@ -115,13 +140,14 @@ function App() {
               <SongAdder refresh={refresh} setRefresh={setRefresh}/>
             </div>
            </div>
+          </ChakraProvider>
   }
 
   let focusedPage
   switch(page) {
     case Pages.Library:
       // Library
-      focusedPage = <Library header='Library' setIndex={setCurSongIndex} songs={songs} setSongs={setSongs}/>
+      focusedPage = <Library header='Library' setIndex={setSong} songs={songs} setSongs={setSongs}/>
       break;
     case Pages.AddSong:
       // AddSong
@@ -137,10 +163,14 @@ function App() {
       break;
     case Pages.Playlist:
       //playlist
-      let plSongs = songs.filter(song => playlist.songs.includes(song.objectID))
-      console.log('plSongs =' )
+      console.log("indexes = ")
+      console.log(indexes)
+      console.log("songs = ")
+      console.log(songs)
+      let plSongs = songs.filter((song, i) =>  indexes.includes(i) )
+      console.log("plSongs = ")
       console.log(plSongs)
-      focusedPage = <Library header={playlist.name} setIndex={setCurSongIndex} songs={plSongs} setSongs={setSongs}/>
+      focusedPage = <Library header={playlist.name} setIndex={setSong} songs={plSongs} setSongs={setSongs}/>
       break;
     default:
       // code block
@@ -152,7 +182,12 @@ function App() {
     <ChakraProvider theme={theme}>
       <div className="App">
         <Flex>
-          <SideMenu page={page} setPage={setPage} playlists={playlists} setPlaylist={setPlaylist}></SideMenu>
+          <SideMenu 
+            page={page} 
+            setPage={setPage} 
+            playlists={playlists} 
+            setPlaylist={setPlaylist}
+          ></SideMenu>
           <Flex id="pagecontent"
             w='full'
             h='full'

@@ -1,10 +1,10 @@
 import React,{useState} from 'react';
-import rewindpng from './assets/Rewind.png'; 
-import fastForwardpng from './assets/Fast Forward.png';
-import playpng from './assets/Play.png';
-import pausepng from './assets/Pause.png';
+import rewindpng from './assets/Rewind.svg'; 
+import fastForwardpng from './assets/Fast Forward.svg';
+import playpng from './assets/Play.svg';
+import pausepng from './assets/Pause.svg';
 
-import { HStack, Box, Text, VStack, Center} from '@chakra-ui/react'
+import { HStack, Box, Text, VStack, Center, Image} from '@chakra-ui/react'
 import { COLOR } from './ChakraTheme';
 
 const BUTTON_SIZE = 40;
@@ -22,10 +22,7 @@ export const formatTime = (seconds) => {
     //console.log("time formatted to: "+time)
     return time
   }
-export const formatProgress = (currentTime, duration) => {
-    let progress = {width: currentTime/duration*PROGRESS_WIDTH+'px'}
-    return progress
-  }
+
 
 const Player = (song) => {
     const [audio, setAudio] = useState(new Audio())
@@ -113,9 +110,9 @@ const Player = (song) => {
           marginLeft='22.5vw'
           w='33vw'
         >
-          <img src={rewindpng} alt="rewindbutton" onClick={() => {prevSong()}} style={{width: BUTTON_SIZE}}/>
-          <img src={playpng} alt="playpausebutton" onClick={playPause} id="playpausebutton" style={{width: BUTTON_SIZE}}/>
-          <img src={fastForwardpng} alt="fastforwardbutton" onClick={() => {nextSong()}} style={{width: BUTTON_SIZE}}/>
+          <Image src={rewindpng} alt="rewindbutton" onClick={() => {prevSong()}} style={{width: BUTTON_SIZE}}/>
+          <Image src={playpng} alt="playpausebutton" onClick={playPause} id="playpausebutton" style={{width: BUTTON_SIZE}}/>
+          <Image src={fastForwardpng} alt="fastforwardbutton" onClick={() => {nextSong()}} style={{width: BUTTON_SIZE}}/>
           <HStack>
             <Text id="songtitle">{song.name}</Text>
             <Text id="songalbum" color={COLOR.secondaryFont}> - {song.album}</Text>

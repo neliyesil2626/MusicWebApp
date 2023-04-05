@@ -1,6 +1,6 @@
 
 import React,{useState,useEffect} from 'react';
-import { Text, Center, Heading, Button, VStack, Input, Flex} from '@chakra-ui/react';
+import { Text, Heading, Button, VStack, Input, Flex, Image, Divider, Box} from '@chakra-ui/react';
 import { COLOR } from './ChakraTheme';
 import { initializeApp } from "firebase/app";
 import { getAuth, 
@@ -10,6 +10,7 @@ import { getAuth,
          signOut, 
          updateProfile
        } from "firebase/auth";
+import logo from './assets/logo.svg'
        
 const firebaseConfig = {
     apiKey: "AIzaSyCGhNG4Q4n49smsKIa_zjkzIr0SwSSMDG0",
@@ -21,7 +22,17 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-
+const image = () => {
+  return <Box><Image src={logo} alt="logo" width='15rem' align='center'/>
+  <Divider 
+    top='9.5rem'
+    left='0rem'
+    w='100vw'
+    position='absolute'
+    borderColor={COLOR.secondaryFont}
+  ></Divider>
+  </Box>
+}
 const signUpUser = (username, email, password) => {
     console.log("logging in new user as:")
     console.log(username+"\n"+email+"\n"+password)
@@ -87,7 +98,8 @@ const SignUp = (props) => {
     let logInPrompt = <p>Have an account?<em id="switchToLogIn" onClick={() => {props.setSignUp(false)}}> Log in </em></p>
   
     return <VStack className="logincomponent">
-    <Heading m='20px'>Sign Up</Heading>
+      {image()}
+    <Heading m='20px' pb='20px' >Sign Up</Heading>
       <Input type="text" name="logInUserName" placeholder="Username" onChange={event => setUsername(event.target.value)} borderColor={COLOR.secondaryFont} w='24rem'></Input>
       <Input type="text" name="logInEmail" placeholder="Email" onChange={event => setEmail(event.target.value)} borderColor={COLOR.secondaryFont} w='24rem'></Input>
       <Input type="text" name="logInPassword" placeholder="Password" onChange={event => setPassword(event.target.value)} borderColor={COLOR.secondaryFont} w='24rem'></Input>
@@ -140,7 +152,8 @@ const Login = (props) => {
     >Log in</Button> 
       let signUpPrompt = <p>No account? <em id="switchToSignUp" onClick={() => {props.setSignUp(true)}}>Sign up</em></p>
       return <VStack className="logincomponent">
-        <Heading m='20px'>Login</Heading>
+        {image()}
+        <Heading m='20px'pb='20px'>Login</Heading>
           <div><Input type="text" name="logInEmail" placeholder="Email" onChange={event => setEmail(event.target.value)} borderColor={COLOR.secondaryFont} w='24rem'></Input></div>
           <div><Input type="text" name="logInPassword" placeholder="Password" onChange={event => setPassword(event.target.value)} borderColor={COLOR.secondaryFont} w='24rem'></Input></div>
           <div id="loginsignout"><center>{button}</center>{signUpPrompt}</div>
@@ -154,8 +167,9 @@ const Login = (props) => {
         _hover={{ bg: COLOR.pinkHover }}
       >Sign Out</Button>
       return <VStack className="logincomponent" w='24rem'>
-        <Heading m='20px'>Login</Heading>
-          <Text>You are already Logged in.</Text>
+        {image()}
+        <Heading m='20px'pb='20px'>Login</Heading>
+          <Text pb='10px'>You are already Logged in.</Text>
           <div id="loginsignout"><center>{button}</center></div>
       </VStack>
     }
@@ -164,7 +178,7 @@ const Login = (props) => {
   const LogInSignUp = (props) => {
     const [signUp, setSignUp] = new useState(false);
     if(signUp){
-        return <Flex paddingLeft='calc(50vw - 12rem - 255px)'><SignUp 
+        return <Flex paddingLeft='calc(50vw - 12rem - 16rem)'><SignUp 
         uid={props.uid} 
         setUid={props.setUid} 
         userName={props.userName} 
@@ -172,7 +186,8 @@ const Login = (props) => {
         setSignUp={setSignUp}>
         </SignUp></Flex>
     } else {
-        return <Flex paddingLeft='calc(50vw - 12rem - 255px)'><Login 
+        return <Flex paddingLeft='calc(50vw - 12rem - 16rem)'>
+        <Login 
         uid={props.uid} 
         setUid={props.setUid} 
         userName={props.userName} 
