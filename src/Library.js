@@ -104,7 +104,6 @@ import React,{useState} from 'react';
       editSong(newSong)
 
     }
-    //TODO: change this to update the proper info for playlists.
     const rowOnClick = (i) => {
       props.setIndex(i);
     }
@@ -128,16 +127,17 @@ import React,{useState} from 'react';
           <Td key={"editSong"} className="editsong" >{songEditMenu(song, setNewTitle, setNewAlbum, setNewArtist, onSubmit)}</Td>
       </Tr>);
     return (<Box 
-              h='200vh'
+              maxH='calc(100vh - 20px)'
               dispaly='inline-block'
-              overflowY='auto'
+              overflowY='scroll'
+              overflowX='hidden'
               >
               <Heading m='20px'>{props.header}</Heading>
               
               <Table className="songlist" 
                 variant='unstyled'
                 size='md' 
-                w='calc(100vw - 255px)'
+                w='calc(100vw)'
                 position='relative'
                 
                 p='0'
@@ -146,6 +146,8 @@ import React,{useState} from 'react';
                   {tableHeaders}
                 </Thead>
                 <Tbody id="songlist">
+                 {tableBody}
+                 {tableBody}
                  {tableBody}
                 </Tbody>
               </Table>

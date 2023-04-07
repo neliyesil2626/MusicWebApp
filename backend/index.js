@@ -281,7 +281,9 @@ const routes = [
                 res.status(200).json({ status: "ok"});
             else 
                 res.status(400).json({status: "not found"});
-        },
+        }
+    },
+    {
         method: 'post',
         path: '/createPlaylist',
         handler: async (req, res) => {
@@ -289,6 +291,8 @@ const routes = [
             await createPlaylist(name, userID, songs);
             res.status(200).json({ status: "ok"});
         },
+    },
+    {
         method: 'get',
         path: '/userPlaylists/:userID',
         handler: async (req, res) => {
@@ -312,6 +316,7 @@ app.use(bodyParser.json());
 // setup the routes
 routes.forEach(route => {
     app[route.method](route.path, route.handler);
+    console.log("binding route: "+route.path )
 });
 
 const start = async () => {

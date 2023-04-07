@@ -177,23 +177,33 @@ const Login = (props) => {
   
   const LogInSignUp = (props) => {
     const [signUp, setSignUp] = new useState(false);
+    let sideMenuWidth = (document.getElementById("sidemenu") !== null) ? document.getElementById("sidemenu").offsetWidth : 0
     if(signUp){
-        return <Flex paddingLeft='calc(50vw - 12rem - 16rem)'><SignUp 
-        uid={props.uid} 
-        setUid={props.setUid} 
-        userName={props.userName} 
-        setUsername={props.setUsername}
-        setSignUp={setSignUp}>
-        </SignUp></Flex>
+        return <VStack 
+              w={'calc(100vw - '+sideMenuWidth+'px - '+sideMenuWidth+'px)'}
+              alignItems='center'
+            >
+          <SignUp 
+            uid={props.uid} 
+            setUid={props.setUid} 
+            userName={props.userName} 
+            setUsername={props.setUsername}
+            setSignUp={setSignUp}>
+          </SignUp>
+        </VStack>
     } else {
-        return <Flex paddingLeft='calc(50vw - 12rem - 16rem)'>
-        <Login 
-        uid={props.uid} 
-        setUid={props.setUid} 
-        userName={props.userName} 
-        setUsername={props.setUsername}
-        setSignUp={setSignUp}>
-        </Login></Flex>
+        return <VStack 
+            w={'calc(100vw - '+sideMenuWidth+'px - '+sideMenuWidth+'px)'}
+            alignItems='center'
+          >
+          <Login 
+            uid={props.uid} 
+            setUid={props.setUid} 
+            userName={props.userName} 
+            setUsername={props.setUsername}
+            setSignUp={setSignUp}>
+          </Login>
+        </VStack>
     }
   }
   export default LogInSignUp

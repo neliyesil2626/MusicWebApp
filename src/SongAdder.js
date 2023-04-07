@@ -100,13 +100,11 @@ import logo from './assets/logo.svg'
       })
       }
     } 
-    return <Flex
-      position='relative'
-      paddingLeft='calc(50vw - 12rem - 16rem)'
+    let sideMenuWidth = (document.getElementById("sidemenu") !== null) ? document.getElementById("sidemenu").offsetWidth : 0
+    return <VStack 
+        w={'calc(100vw - '+sideMenuWidth+'px - '+sideMenuWidth+'px)'}
+        alignItems='center'
     >
-      
-      <VStack 
-      >
       <Image src={logo} alt="logo" width='15rem' align='center'/>
       <Divider 
         top='9rem'
@@ -122,6 +120,5 @@ import logo from './assets/logo.svg'
       <Input id="upload" type="file" accept=".mp3" placeholder="Upload File" onChange={event => onUpload(event.target.value)} border='none'w='24rem'></Input>
       <Center><Button onClick={onSubmit} bg={COLOR.pink} _hover={{ bg: COLOR.pinkHover }}>addSong</Button></Center><Text id="validupdateprompt">{validUploadPrompt}</Text>
     </VStack>
-    </Flex>
   }
   export default SongAdder

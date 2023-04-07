@@ -7,7 +7,8 @@ import LogInSignUp from './LogInSignUp.js';
 import {theme, COLOR} from './ChakraTheme.js';
 import React,{useState, useEffect} from 'react';
 import { ChakraProvider, Flex, Button} from '@chakra-ui/react';
-
+import CreatePlaylist from './CreatePlaylist.js';
+import CreatePlaylistNotLoggedIn from './CreatePlaylistNotLoggedIn.js'
 const fetchData = async (url) => {
   fetch('/library').then(
       (response) => response.json()
@@ -79,7 +80,7 @@ function App() {
 
   React.useEffect(() => { //set variables when song info is retrieved from backend.
     console.log("state changed to: " + page)
-    if(page === Pages.Library){
+    if(page === Pages.Library || page === Pages.CreatePlaylist){
       setIndexes(songs.map((song, i) => i));
       setPlaylist([])
     }
@@ -143,7 +144,7 @@ function App() {
           </ChakraProvider>
   }
 
-  let focusedPage
+  let focusedPage;
   switch(page) {
     case Pages.Library:
       // Library
@@ -155,7 +156,9 @@ function App() {
       break;
     case Pages.CreatePlaylist:
       //CreatePlaylist
-      focusedPage = <LogInSignUp uid={uid} setUid={setUid} userName={userName} setUsername={setUsername}></LogInSignUp>
+        focusedPage = (uid !== "") ? 
+        <CreatePlaylist uid={uid} setUid={setUid} songs={songs} setIndex={setCurSongIndex}></CreatePlaylist> :
+        <CreatePlaylistNotLoggedIn></CreatePlaylistNotLoggedIn>
       break;
     case Pages.Login:
       //Login
@@ -177,7 +180,7 @@ function App() {
   }
 
   let loginButtonText = (uid === undefined || uid == '') ? 'Log in' : userName+' ▼'
-
+  let playerHeight = (document.getElementById("player") !== null) ? document.getElementById("player").offsetHeight : 0
   return (
     <ChakraProvider theme={theme}>
       <div className="App">
@@ -187,29 +190,31 @@ function App() {
             setPage={setPage} 
             playlists={playlists} 
             setPlaylist={setPlaylist}
+            
           ></SideMenu>
           <Flex id="pagecontent"
-            w='full'
-            h='full'
+            w='100%'
+            h={'calc(100vh - '+playerHeight+'px)'}
             position='relative'
             overflow='hidden'
             left='0'
             p='0'
+            m='0'
           >
             {focusedPage} 
           </Flex>
         </Flex>
-          <Player 
-            name={songs[curSongIndex].name}
-            album={songs[curSongIndex].album}
-            curSongID={songs[curSongIndex].objectID} 
-            next={incSong} 
-            prev={decSong} 
-            isLoading = {isLoadingSong}
-            load = {loadSong}
-            songs = {songs}
-            index = {curSongIndex}
-          />
+        <Player 
+          name={songs[curSongIndex].name}
+          album={songs[curSongIndex].album}
+          curSongID={songs[curSongIndex].objectID} 
+          next={incSong} 
+          prev={decSong} 
+          isLoading = {isLoadingSong}
+          load = {loadSong}
+          songs = {songs}
+          index = {curSongIndex}
+        />
       </div>
       <Button id="loginbutton" onClick={() => {
             if(page != Pages.Login){

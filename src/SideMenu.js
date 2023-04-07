@@ -3,22 +3,44 @@ import Pages from './PageEnums.js';
 import logo from './assets/logo.svg';
 import {COLOR} from './ChakraTheme.js';
 import React,{useState, useEffect} from 'react';
-import { Text, VStack, Center , Image} from '@chakra-ui/react'
+import { Text, VStack, Center , Image, Flex, Box} from '@chakra-ui/react'
 /*
  * 
  */
 const playlistButton = (playlist, i, setPlaylist, setPage) => {
-    return <Text key={'playlist'+i} 
-                color={COLOR.secondaryFont}
-                pl='1em'
-                _hover={{ cursor: 'pointer', color: COLOR.tertiaryFont}}
-                onClick={()=>{
-                    setPlaylist(playlist)
-                    setPage(Pages.Playlist)
-                }}
+    // <Box
+    //                 position='fixed'
+    //                 ml='calc(10rem - 50px)'
+    //                 align='flex-end'
+    //                 bgImage={'linear-gradient(to right, transparent,var(--chakra-colors-gray-800))'}
+    //                 w='50px'
+    //                 h='2rem'
+    //             ></Box>
+    return <Flex
+                h='1.5rem'
             >
-                {playlist.name}
-           </Text>
+                
+                <Text key={'playlist'+i} 
+                        w='10rem'
+                        h='fit-content'
+                        overflow='hidden'
+                        whiteSpace='nowrap'
+                        textOverflow='clip'
+                        position='fixed'
+                        color={COLOR.secondaryFont}
+                        bgRepeat='repeat-y'
+                        pl='1em'
+                        borderRadius='5px'
+                        _hover={{ pr:'20px',w:'fit-content', cursor: 'pointer', color: COLOR.tertiaryFont, overflow:'visible', bg:COLOR.bg2}}
+                        onClick={()=>{
+                            setPlaylist(playlist)
+                            setPage(Pages.Playlist)
+                        }}
+                >
+                    {playlist.name}
+                </Text>
+                
+            </Flex>
 }
 const SideMenu = (props) => {
     let addSongButton = <Text onClick={() => {props.setPage(Pages.AddSong)}} className='menuitem' _hover={{ cursor: 'pointer', color: COLOR.secondaryFont}}>o Add Song</Text>

@@ -1,4 +1,5 @@
 import React,{useState} from 'react';
+
 import rewindpng from './assets/Rewind.svg'; 
 import fastForwardpng from './assets/Fast Forward.svg';
 import playpng from './assets/Play.svg';
@@ -9,7 +10,6 @@ import queuepng from './assets/QueueSong.svg';
 
 import { HStack, Box, Text, VStack, Center, Image, Spacer} from '@chakra-ui/react'
 import { COLOR } from './ChakraTheme';
-
 const BUTTON_SIZE = 40;
 const PROGRESS_WIDTH = 500; //width of the progress bar in px
 
@@ -107,6 +107,7 @@ const Player = (song) => {
         position='fixed'
         bottom='0'
         p='0'
+        id='player'
       >
         <HStack id="mediabuttons"
           marginTop='10px'
