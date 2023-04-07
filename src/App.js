@@ -181,6 +181,7 @@ function App() {
 
   let loginButtonText = (uid === undefined || uid == '') ? 'Log in' : userName+' ▼'
   let playerHeight = (document.getElementById("player") !== null) ? document.getElementById("player").offsetHeight : 0
+  let sideMenuWidth = (document.getElementById("sidemenu") !== null) ? document.getElementById("sidemenu").offsetWidth : 0
   return (
     <ChakraProvider theme={theme}>
       <div className="App">
@@ -193,7 +194,7 @@ function App() {
             
           ></SideMenu>
           <Flex id="pagecontent"
-            w='100%'
+            w={'calc(100vw - '+sideMenuWidth+'px)'}
             h={'calc(100vh - '+playerHeight+'px)'}
             position='relative'
             overflow='hidden'

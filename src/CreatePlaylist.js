@@ -43,7 +43,8 @@ import {
 const CreatePlaylist = (props) => {
     let [name, setName] = useState("");
     let [songIndexes, setSongIndexes] = useState([]);
-    let tableHeaders = []
+    let selectSongTableHeaders = []
+    let addedSongTableHeaders = []
     let selectSongTableBody = []
     let addedSongTableBody = []
     React.useEffect(() => {
@@ -81,10 +82,10 @@ const CreatePlaylist = (props) => {
         props.setIndex(i);
       }
   
-    tableHeaders = <Tr color={COLOR.secondaryFont} borderBottom='1px' borderColor={COLOR.secondaryFont} >
-                        <Td key="hname">title</Td>
-                        <Td key="hartist">artist</Td>
-                        <Td key="heditsong"></Td>
+    selectSongTableHeaders = <Tr color={COLOR.secondaryFont} borderBottom='1px' borderColor={COLOR.secondaryFont} >
+                        <Td key="hname" w='45%'>title</Td>
+                        <Td key="hartist" w='45%'>artist</Td>
+                        <Td key="heditsong" w='10%'>add</Td>
                     </Tr>; //header elements
     selectSongTableBody = props.songs.filter((song, i) => !songIndexes.includes(i)).map((song) => <Tr key={song.objectID} id={song.objectID} 
         borderBottom='none'
@@ -92,26 +93,31 @@ const CreatePlaylist = (props) => {
         h='2em'
     >
         <Td key={"name"} className="name" paddingLeft='0' fontSize='1.2em' onClick={() => { rowOnClick(props.songs.indexOf(song))}}>{song.name}</Td>
-        <Td key={"artist"} className="artist" onClick={() => { rowOnClick(props.songs.indexOf(song))}}>{song.artist}</Td> 
+        <Td key={"artist"} className="artist" onClick={() => { rowOnClick(props.songs.indexOf(song))}} color={COLOR.secondaryFont}>{song.artist}</Td> 
         <Td key={"addSong"} className="addSong" >
-            <Button 
+            <CloseButton 
                 onClick={() => {addSong( props.songs.indexOf(song)) }} 
                 bg='transparent'
                 color={COLOR.primaryFont} 
                 borderRadius='full'
                 _hover={{ bg: COLOR.pink}} 
-                fontSize='1.5REM'
-            >+</Button>
+                fontSize='2rem'
+            >+</CloseButton>
         </Td>
     </Tr>);
 
+    addedSongTableHeaders = <Tr color={COLOR.secondaryFont} borderBottom='1px' borderColor={COLOR.secondaryFont} >
+                        <Td key="hname" w='45%'>title</Td>
+                        <Td key="hartist" w='45%'>artist</Td>
+                        <Td key="heditsong" w='10%'>remove</Td>
+                    </Tr>; //header elements
     addedSongTableBody = songIndexes.map((i) => <Tr key={props.songs[i].objectID} id={props.songs[i].objectID} 
         borderBottom='none'
         _hover={{ bg: COLOR.bgHover, cursor: 'default'}}
         h='2em'
     >
         <Td key={"name"} className="name" paddingLeft='0' fontSize='1.2em'>{props.songs[i].name}</Td>
-        <Td key={"artist"} className="artist">{props.songs[i].artist}</Td> 
+        <Td key={"artist"} className="artist" color={COLOR.secondaryFont}>{props.songs[i].artist}</Td> 
         <Td key={"removeSong"} className="removeSong" >
             <CloseButton
                 onClick={() => {removeSong(i)}} 
@@ -122,31 +128,31 @@ const CreatePlaylist = (props) => {
             ></CloseButton>
         </Td>
     </Tr>);
-
+    let sideMenuWidth = document.getElementById("sidemenu").offsetWidth
     return (<Box 
         h='fit-content'
-        w={'calc(100vw - '+document.getElementById("sidemenu").offsetWidth+'px)'}
-        mb='16rem'
-        dispaly='inline-block'
+        w={'calc(100vw - '+sideMenuWidth+'px)'}
+        display='inline-block'
         overflowY='scroll'
+        overflowX='hidden'
         maxH={'calc(100vh - '+document.getElementById("player").offsetHeight+'px)'}
-        pb='10rem'
+        pb='5rem'
         >
-            <VStack>
-                <Heading m='20px' pb='20px'>Create Playlist</Heading>
-                <Input type="text" name="playlistName" placeholder="Title" onChange={event => setName(event.target.value)} borderColor={COLOR.secondaryFont}w='24rem'></Input>
+            <Heading m='20px' >Create Playlist</Heading>
+            <VStack alignContent='flex-start'>
+                <Input type="text" name="playlistName" placeholder="Playlist Title" onChange={event => setName(event.target.value)} borderColor={COLOR.secondaryFont}w='24rem'></Input>
                 <HStack>
                     <Table className="songlist" 
                             alignSelf='flex-start'
                             variant='unstyled'
-                            size='md' 
-                            w='calc(50vw - 127px)'
+                            size='sm' 
+                            w={'calc(50vw - 10px - '+sideMenuWidth/2+'px)'}
                             position='relative'
-                            
-                            p='0'
+                            borderRight='1px'
+                            borderRightColor={COLOR.secondaryFont}
                     >
-                        <Thead id="addedsonglistheaders">
-                            {tableHeaders}
+                        <Thead id="addedsonglistheaders"  >
+                            {selectSongTableHeaders}
                         </Thead>
                         <Tbody id="addedsonglist">
                             {selectSongTableBody}
@@ -155,14 +161,12 @@ const CreatePlaylist = (props) => {
                     <Table className="addedsonglist" 
                         alignSelf='flex-start'
                         variant='unstyled'
-                        size='md' 
-                        w='calc(50vw - 127px)'
+                        size='sm' 
+                        w={'calc(50vw - 10px - '+sideMenuWidth/2+'px)'}
                         position='relative'
-                        
-                        p='0'
                     >
                         <Thead id="addedsonglistheaders">
-                            {tableHeaders}
+                            {addedSongTableHeaders}
                         </Thead>
                         <Tbody id="addedsonglist">
                             {addedSongTableBody}

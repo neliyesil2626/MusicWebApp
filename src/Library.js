@@ -60,7 +60,7 @@ import React,{useState} from 'react';
  }
  const songEditMenu = (song, setTitle, setAlbum, setArtist, onSubmit) => {
   return <Menu bg={COLOR.bg2} closeOnSelect={false} position='fixed'>
-  <MenuButton colorscheme='transparent'>•••</MenuButton>
+  <MenuButton colorscheme='transparent' >•••</MenuButton>
   <MenuList bg={COLOR.bg2}>
     <MenuGroup title={'Edit '+song.name} >
       <VStack>
@@ -122,10 +122,11 @@ import React,{useState} from 'react';
       >
           <Td key={"number"} className="number" color={COLOR.secondaryFont} w='1em' onClick={() => { rowOnClick(i)}}>{i+1}</Td>
           <Td key={"name"} className="name" paddingLeft='0' fontSize='1.2em' onClick={() => { rowOnClick(i)}}>{song.name}</Td>
-          <Td key={"artist"} className="artist" onClick={() => { rowOnClick(i)}}>{song.artist}</Td> 
-          <Td key={"album"} className="album" onClick={() => { rowOnClick(i)}}>{song.album}</Td>
+          <Td key={"artist"} className="artist" onClick={() => { rowOnClick(i)}} color={COLOR.secondaryFont}>{song.artist}</Td> 
+          <Td key={"album"} className="album" onClick={() => { rowOnClick(i)}} color={COLOR.tertiaryFont}>{song.album}</Td>
           <Td key={"editSong"} className="editsong" >{songEditMenu(song, setNewTitle, setNewAlbum, setNewArtist, onSubmit)}</Td>
       </Tr>);
+    let sideMenuWidth = document.getElementById("sidemenu").offsetWidth
     return (<Box 
               maxH='calc(100vh - 20px)'
               dispaly='inline-block'
@@ -137,7 +138,7 @@ import React,{useState} from 'react';
               <Table className="songlist" 
                 variant='unstyled'
                 size='md' 
-                w='calc(100vw)'
+                w={'calc(100vw - '+sideMenuWidth+'px)'}
                 position='relative'
                 
                 p='0'
