@@ -11,17 +11,7 @@ import { getAuth,
          updateProfile
        } from "firebase/auth";
 import logo from './assets/logo.svg'
-       
-const firebaseConfig = {
-    apiKey: "AIzaSyCGhNG4Q4n49smsKIa_zjkzIr0SwSSMDG0",
-    authDomain: "webmusicplayer-seniorproject.firebaseapp.com",
-    projectId: "webmusicplayer-seniorproject",
-    storageBucket: "webmusicplayer-seniorproject.appspot.com",
-    messagingSenderId: "607390814407",
-    appId: "1:607390814407:web:2a174fc1a386f9f251aee2"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+
 const image = () => {
   return <Box><Image src={logo} alt="logo" width='15rem' align='center'/>
   <Divider 
@@ -33,7 +23,7 @@ const image = () => {
   ></Divider>
   </Box>
 }
-const signUpUser = (username, email, password) => {
+const signUpUser = (auth, username, email, password) => {
     console.log("logging in new user as:")
     console.log(username+"\n"+email+"\n"+password)
     createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
@@ -43,7 +33,7 @@ const signUpUser = (username, email, password) => {
         const errorMessage = error.message;
       });
   }
-  const logInUser = (email, password) => {
+  const logInUser = (auth, email, password) => {
     console.log("logging in: "+email )
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -63,9 +53,9 @@ const SignUp = (props) => {
     const [password, setPassword] = new useState("");
     const [createUser, setCreateUser] = new useState(false);
     
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(props.auth, (user) => {
       if (createUser && typeof user != Promise) {
-        updateProfile(auth.currentUser, {
+        updateProfile(props.auth.currentUser, {
           displayName: username
         }).then(() => {
           // Profile updated!
@@ -124,18 +114,18 @@ const Login = (props) => {
     const [password, setPassword] = new useState("");
     let loginOnClick = () => {logInUser(email, password)}
     let signoutOnClick = () => {
-      signOut(auth).then(() => {
+      signOut(props.auth).then(() => {
         props.setUid('')
         console.log("signed out")
       }).catch((error) => {
         console.log(error)
       });
     }
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(props.auth, (user) => {
       if (user) {
         const uid = user.uid
-        const username = auth.currentUser.displayName
-        console.log("authentication changed to: "+auth.currentUser.displayName)
+        const username = props.auth.currentUser.displayName
+        console.log("authentication changed to: "+props.auth.currentUser.displayName)
         console.log("uid = "+uid)
         props.setUid(uid)
         props.setUsername(username)
@@ -184,6 +174,7 @@ const Login = (props) => {
               alignItems='center'
             >
           <SignUp 
+            auth={props.auth}
             uid={props.uid} 
             setUid={props.setUid} 
             userName={props.userName} 
@@ -197,6 +188,7 @@ const Login = (props) => {
             alignItems='center'
           >
           <Login 
+            auth={props.auth}
             uid={props.uid} 
             setUid={props.setUid} 
             userName={props.userName} 

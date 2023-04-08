@@ -57,8 +57,12 @@ const Player = (song) => {
   
     React.useEffect(() => {
       if(songEnded){
-        setPlayNextSong(true)
-        song.next()
+        if(song.loopPlay){
+          audio.play()
+        } else {
+          setPlayNextSong(true)
+          song.next()
+        }
         setSongEnded(false)
       }
     }, [songEnded])
@@ -69,7 +73,7 @@ const Player = (song) => {
     if(!initialized){ //ensures that only one event listener is attached to audio. After all songs are loaded 
       audio.src = '/stream/'+song.curSongID
       audio.addEventListener("ended", async (event) =>{ 
-       setSongEnded("true")
+       setSongEnded(true)
       })
       audio.addEventListener("play", () => {
         document.getElementById("playpausebutton").setAttribute("src", pausepng)
@@ -98,7 +102,9 @@ const Player = (song) => {
     }
     const nextSong = () => { //used to play next song
       console.log("Player.nextSong() was called.")
-      if(playing){setPlayNextSong(true)}
+      if(playing){
+        setPlayNextSong(true)
+      }
       song.next()
     }
     const prevSong = () => { //used to play previous song

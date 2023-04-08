@@ -9,6 +9,9 @@ import React,{useState, useEffect} from 'react';
 import { ChakraProvider, Flex, Button} from '@chakra-ui/react';
 import CreatePlaylist from './CreatePlaylist.js';
 import CreatePlaylistNotLoggedIn from './CreatePlaylistNotLoggedIn.js'
+import { getAuth } from 'firebase/auth';
+import { initializeApp } from "firebase/app";
+import { useTheme } from '@emotion/react';
 const fetchData = async (url) => {
   fetch('/library').then(
       (response) => response.json()
@@ -42,6 +45,20 @@ const downloadFile = (file, fileName) => {
   window.URL.revokeObjectURL(url);
 }
 
+const connectFirebase = () => {
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGhNG4Q4n49smsKIa_zjkzIr0SwSSMDG0",
+    authDomain: "webmusicplayer-seniorproject.firebaseapp.com",
+    projectId: "webmusicplayer-seniorproject",
+    storageBucket: "webmusicplayer-seniorproject.appspot.com",
+    messagingSenderId: "607390814407",
+    appId: "1:607390814407:web:2a174fc1a386f9f251aee2"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  return {auth:auth, app:app}
+}
+
 /**
  * Create the player component. 
  * 
@@ -54,13 +71,23 @@ function App() {
   const [playlists, setPlaylists] = useState([])
   const [playlist, setPlaylist] = useState()
   const [isLoadingSong, setLoadingSong] = useState(false) //used when the song ends and the next song is starting
-  const [refresh, setRefresh] = useState(false) //used to detect when 
+  const [refresh, setRefresh] = useState(false) //used to detect when db.library collection has updated
   const [uid, setUid] = useState("")
   const [userName, setUsername] = useState("")
   const [page, setPage] = useState(Pages.Library)
+
   const [shufflePlay, setShufflePlay] = useState(false)
   const [loopPlay, setLoopPlay] = useState(false)
   const [queue, setQueue] = useState([])
+
+  const [app, setApp] = useState()
+  const [auth, setAuth] = useState()
+  if(auth === null || auth === undefined){
+    let connection = connectFirebase()
+    setApp(connection.app)
+    setAuth(connection.auth)
+  }
+
 
   React.useEffect(() => { //set variables when song info is retrieved from backend.
     console.log("app is fetching data...")
@@ -68,6 +95,9 @@ function App() {
       (response) => response.json()
     ).then((value) => {
       setSongs(value)
+      if(page === Pages.Library) {
+        setIndexes(value.map((song, i) => i))
+      }
     });
   }, [refresh] );
   React.useEffect(() => {
@@ -106,6 +136,16 @@ function App() {
     console.log(indexes)
     
   }, [playlist])
+  
+  React.useEffect(() => { //set variables when song info is retrieved from backend.
+    if(auth.currentUser !== undefined && auth.currentUser !== null){
+      setUid(auth.currentUser.uid)
+      setUsername(auth.currentUser.displayName)
+      
+    }
+  }, [auth] );
+
+
 
   const incSong = () => {
       let nextSongIndex = indexes.indexOf(curSongIndex) + 1
@@ -167,7 +207,7 @@ function App() {
       break;
     case Pages.Login:
       //Login
-      focusedPage = <LogInSignUp uid={uid} setUid={setUid} userName={userName} setUsername={setUsername}></LogInSignUp>
+      focusedPage = <LogInSignUp uid={uid} setUid={setUid} userName={userName} setUsername={setUsername} auth={auth} app={app}></LogInSignUp>
       break;
     case Pages.Playlist:
       //playlist
