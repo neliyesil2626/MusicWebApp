@@ -18,9 +18,10 @@ const playlistButton = (playlist, i, setPlaylist, setPage) => {
     //             ></Box>
     return <Flex
                 h='1.5rem'
+                key={'playlist'+i}
             >
                 
-                <Text key={'playlist'+i} 
+                <Text  
                         w='10rem'
                         h='fit-content'
                         overflow='hidden'

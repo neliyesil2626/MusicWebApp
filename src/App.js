@@ -58,6 +58,9 @@ function App() {
   const [uid, setUid] = useState("")
   const [userName, setUsername] = useState("")
   const [page, setPage] = useState(Pages.Library)
+  const [shufflePlay, setShufflePlay] = useState(false)
+  const [loopPlay, setLoopPlay] = useState(false)
+  const [queue, setQueue] = useState([])
 
   React.useEffect(() => { //set variables when song info is retrieved from backend.
     console.log("app is fetching data...")
@@ -75,6 +78,8 @@ function App() {
       ).then((value) => {
         setPlaylists(value)
       });
+    } else {
+      console.log("logged out")
     }
   }, [uid] );
 
@@ -215,6 +220,9 @@ function App() {
           load = {loadSong}
           songs = {songs}
           index = {curSongIndex}
+          loopPlay={loopPlay} setLoopPlay={setLoopPlay}
+          shufflePlay={shufflePlay} setShufflePlay={setShufflePlay}
+
         />
       </div>
       <Button id="loginbutton" onClick={() => {

@@ -9,8 +9,9 @@ import shufflepng from './assets/ShufflePlay.svg';
 import queuepng from './assets/QueueSong.svg';
 import volumepng from './assets/volume control.svg';
 
-import { HStack, Box, Text, VStack, Center, Image, Spacer, Flex, Slider, SliderTrack, SliderFilledTrack, SliderThumb} from '@chakra-ui/react'
+import { HStack, Box, Text, VStack, Center, Image, Spacer, Flex, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Icon} from '@chakra-ui/react'
 import { COLOR } from './ChakraTheme';
+import LoopIcon from './assets/LoopSong';
 const BUTTON_SIZE = 40;
 const PROGRESS_WIDTH = 500; //width of the progress bar in px
 
@@ -38,6 +39,9 @@ const Player = (song) => {
     const [songEnded, setSongEnded] = useState(false) //used to keep track of when a song finishes playing.
     const [volume, setVolume] = useState(0.5)
     const [volumeBar, setVolumeBar] = useState(0)
+    let loopFilter = (song.loopPlay) ? 'none' : 'grayscale()'
+    let shuffleFilter = (song.shufflePlay) ? 'none' : 'grayscale()'
+
     React.useEffect(() => {
       console.log("Player.Audio changed to next song: "+song.name)
       audio.src = '/stream/'+song.songs[song.index].objectID
@@ -109,6 +113,7 @@ const Player = (song) => {
         audio.volume = 0.0
       }
     }
+
     return (
       <Box
         w='full'
@@ -135,9 +140,9 @@ const Player = (song) => {
           <Spacer />
           <HStack 
           float='left'>
-            <Image src={shufflepng} alt="shufflebutton" onClick={() => {}} style={{width: BUTTON_SIZE}}/>
-            <Image src={looppng} alt="fastforwardbutton" onClick={() => {}} style={{width: BUTTON_SIZE}}/>
-            <Image src={queuepng} alt="fastforwardbutton" onClick={() => {}} style={{width: BUTTON_SIZE}}/>
+            <Image src={shufflepng} alt="shufflebutton" onClick={() => {song.setShufflePlay(!song.shufflePlay)}} style={{width: BUTTON_SIZE}} filter={shuffleFilter}/>
+            <Image src={looppng} alt="loopbutton" onClick={() => {song.setLoopPlay(!song.loopPlay)}} style={{width: BUTTON_SIZE}} filter={loopFilter}/>
+            <Image src={queuepng} alt="queuebutton" onClick={() => {}} style={{width: BUTTON_SIZE}}/>
           </HStack>
         </HStack>
        <Center><HStack>
