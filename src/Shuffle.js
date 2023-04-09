@@ -3,7 +3,7 @@
 //https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj
 
 export const shuffle = (array) => {
-    let shuffledArray = array
+    let shuffledArray = [...array]//copy values off array to shuffledArray
     for (let i = shuffledArray.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       const temp = shuffledArray[i];

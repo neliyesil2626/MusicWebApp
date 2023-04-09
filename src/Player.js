@@ -30,6 +30,7 @@ export const formatTime = (seconds) => {
 
 
 const Player = (song) => {
+    console.log("reloading player")
     const [audio, setAudio] = useState(new Audio())
     const [playing, setPlaying] = useState(false)
     const [initialized, setInitialized] = useState(false)
@@ -146,8 +147,14 @@ const Player = (song) => {
           <Spacer />
           <HStack 
           float='left'>
-            <Image src={shufflepng} alt="shufflebutton" onClick={() => {song.setShufflePlay(!song.shufflePlay)}} style={{width: BUTTON_SIZE}} filter={shuffleFilter}/>
-            <Image src={looppng} alt="loopbutton" onClick={() => {song.setLoopPlay(!song.loopPlay)}} style={{width: BUTTON_SIZE}} filter={loopFilter}/>
+            <Image src={shufflepng} alt="shufflebutton" onClick={() => {
+                console.log('setting shufflePlay to '+ !song.shufflePlay)
+                song.setShufflePlay(!song.shufflePlay)
+              }} style={{width: BUTTON_SIZE}} filter={shuffleFilter}/>
+            <Image src={looppng} alt="loopbutton" onClick={() => {
+                console.log('setting loopPlay to: '+ !song.loopPlay)
+                song.setLoopPlay(!song.loopPlay)
+              }} style={{width: BUTTON_SIZE}} filter={loopFilter}/>
             <Image src={queuepng} alt="queuebutton" onClick={() => {}} style={{width: BUTTON_SIZE}}/>
           </HStack>
         </HStack>
@@ -160,7 +167,6 @@ const Player = (song) => {
           </Box>
           <Flex 
             onMouseOver={() => {
-              console.log("hovered over flex")
               setVolumeBar(10)
             }} 
             onMouseOut={() => {

@@ -148,8 +148,6 @@ import React,{useState} from 'react';
                 </Thead>
                 <Tbody id="songlist">
                  {tableBody}
-                 {tableBody}
-                 {tableBody}
                 </Tbody>
               </Table>
             </Box>);

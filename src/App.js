@@ -46,10 +46,6 @@ const downloadFile = (file, fileName) => {
   window.URL.revokeObjectURL(url);
 }
 
-const indexSongs = (songs, playlist, setIndexes) => {
-  
-}
-
 const connectFirebase = () => {
   const firebaseConfig = {
     apiKey: "AIzaSyCGhNG4Q4n49smsKIa_zjkzIr0SwSSMDG0",
@@ -95,7 +91,11 @@ function App() {
     setAuth(connection.auth)
   }
 
-
+  React.useEffect(() => {
+    console.log("\n[index update] indexes = ")
+    console.log(indexes)
+    console.log('\n')
+  },[indexes])
   React.useEffect(() => { //set variables when song info is retrieved from backend.
     console.log("app is fetching data...")
     fetch('/library').then(
@@ -176,6 +176,7 @@ function App() {
     }
   }, [auth] );
   React.useEffect(() => {
+    console.log("shufflePlay is updated to: " + shufflePlay)
     if(shufflePlay){
       let newShuffledIndexes = shuffle(indexes)
       setShuffledIndexes(newShuffledIndexes)
@@ -193,6 +194,9 @@ function App() {
       if(nextSongIndex  >= songIndexes.length){
         nextSongIndex = 0
       }
+      console.log("\nincsong.songIndexes = ")
+      console.log(songIndexes)
+      console.log('\n')
       setCurSongIndex(songIndexes[nextSongIndex])
       console.log(nextSongIndex+" incremented song to: "+songs[nextSongIndex].name)
   }
