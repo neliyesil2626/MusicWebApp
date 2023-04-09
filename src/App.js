@@ -4,6 +4,7 @@ import SideMenu from './SideMenu.js';
 import SongAdder from './SongAdder.js';
 import Library from './Library.js';
 import LogInSignUp from './LogInSignUp.js';
+import {shuffle} from './Shuffle.js';
 import {theme, COLOR} from './ChakraTheme.js';
 import React,{useState, useEffect} from 'react';
 import { ChakraProvider, Flex, Button} from '@chakra-ui/react';
@@ -45,6 +46,10 @@ const downloadFile = (file, fileName) => {
   window.URL.revokeObjectURL(url);
 }
 
+const indexSongs = (songs, playlist, setIndexes) => {
+  
+}
+
 const connectFirebase = () => {
   const firebaseConfig = {
     apiKey: "AIzaSyCGhNG4Q4n49smsKIa_zjkzIr0SwSSMDG0",
@@ -68,6 +73,7 @@ function App() {
   const [curSongIndex, setCurSongIndex] = useState(0)//index of the current song playing in the mongodb
   const [songs, setSongs] = useState([]) //list of song objects from t.library in mongodb
   const [indexes, setIndexes] = useState([]);
+  const [shuffledIndexes, setShuffledIndexes] = useState([]);
   const [playlists, setPlaylists] = useState([])
   const [playlist, setPlaylist] = useState()
   const [isLoadingSong, setLoadingSong] = useState(false) //used when the song ends and the next song is starting
@@ -83,6 +89,7 @@ function App() {
   const [app, setApp] = useState()
   const [auth, setAuth] = useState()
   if(auth === null || auth === undefined){
+    console.log("connecting to firebase...")
     let connection = connectFirebase()
     setApp(connection.app)
     setAuth(connection.auth)
@@ -95,9 +102,9 @@ function App() {
       (response) => response.json()
     ).then((value) => {
       setSongs(value)
-      if(page === Pages.Library) {
-        setIndexes(value.map((song, i) => i))
-      }
+      console.log("songs = ")
+      console.log(songs)
+      console.log("\n")
     });
   }, [refresh] );
   React.useEffect(() => {
@@ -113,55 +120,90 @@ function App() {
     }
   }, [uid] );
 
-  React.useEffect(() => { //set variables when song info is retrieved from backend.
-    console.log("state changed to: " + page)
-    if(page === Pages.Library || page === Pages.CreatePlaylist){
-      setIndexes(songs.map((song, i) => i));
-      setPlaylist([])
+  React.useEffect(() => {
+    if(songs === undefined || songs.length === 0){
+      console.log("songs null")
+      return
+    }else {
+      console.log("useEffect[page] songs = ")
+      console.log(songs)
+    
+      console.log("useEffect[page]: state changed to: " + page)
+      if(page === Pages.Library || page === Pages.CreatePlaylist){
+        let newIndexes = songs.map((song, i) => i)
+        setIndexes(newIndexes)
+        console.log("useEffect[page]: indexes = ")
+        console.log(newIndexes)
+        console.log("\n")
+        setPlaylist([])
+        if(shufflePlay){
+          let newShuffledIndexes = shuffle(newIndexes)
+          setShuffledIndexes(newShuffledIndexes)
+          setCurSongIndex(newShuffledIndexes[0])
+        } else {
+          setCurSongIndex(newIndexes[0])
+        }
+      }
+      console.log('useEffect[page,songs] curSongIndex = '+ curSongIndex)
     }
-  }, [page] );
+  }, [page, songs] );
   React.useEffect(()=>{
+    console.log("useEffect[playlist]: page = " +page)
+    let newIndexes = []
     if(page !== Pages.Library && playlist !== [] && playlist.songs !== undefined){
-      let newIndexes = []
       for(let i = 0; i < songs.length; i++){
         if(playlist.songs.includes(songs[i].objectID)){
           newIndexes.push(i)
         }
       }
       setIndexes(newIndexes)
-      console.log('Indexes = ')
+      console.log('useEffect[playlist]: Indexes = ')
       console.log(newIndexes)
-      setCurSongIndex(newIndexes[0])
+      if(shufflePlay){
+        let newShuffledIndexes = shuffle(newIndexes)
+        setShuffledIndexes(newShuffledIndexes)
+        setCurSongIndex(newShuffledIndexes[0])
+      } else {
+        setCurSongIndex(newIndexes[0])
+      }
     }
-    console.log(indexes)
-    
-  }, [playlist])
+   }, [playlist])
   
-  React.useEffect(() => { //set variables when song info is retrieved from backend.
+  React.useEffect(() => {
     if(auth.currentUser !== undefined && auth.currentUser !== null){
       setUid(auth.currentUser.uid)
       setUsername(auth.currentUser.displayName)
-      
     }
   }, [auth] );
+  React.useEffect(() => {
+    if(shufflePlay){
+      let newShuffledIndexes = shuffle(indexes)
+      setShuffledIndexes(newShuffledIndexes)
+      setCurSongIndex(newShuffledIndexes[0])
+      console.log("shuffeled indexes: ")
+      console.log(newShuffledIndexes)
+    }
+  }, [shufflePlay] );
 
 
 
   const incSong = () => {
-      let nextSongIndex = indexes.indexOf(curSongIndex) + 1
-      if(nextSongIndex  >= indexes.length){
+    let songIndexes = (shufflePlay)? shuffledIndexes : indexes
+      let nextSongIndex = songIndexes.indexOf(curSongIndex) + 1
+      if(nextSongIndex  >= songIndexes.length){
         nextSongIndex = 0
       }
-      setCurSongIndex(indexes[nextSongIndex])
+      setCurSongIndex(songIndexes[nextSongIndex])
       console.log(nextSongIndex+" incremented song to: "+songs[nextSongIndex].name)
   }
 
   const decSong = () => {
-    let nextSongIndex = indexes.indexOf(curSongIndex) - 1
+    let songIndexes = (shufflePlay)? shuffledIndexes : indexes
+    let nextSongIndex = songIndexes.indexOf(curSongIndex) - 1
     if(nextSongIndex < 0){
-      nextSongIndex = indexes.length - 1
+      nextSongIndex = songIndexes.length - 1
     }
-    setCurSongIndex(indexes[nextSongIndex])
+    setCurSongIndex(songIndexes[nextSongIndex])
     console.log(nextSongIndex+" decremented song to: "+songs[nextSongIndex].name)
   }
   const setSong = (i) => {
@@ -211,13 +253,7 @@ function App() {
       break;
     case Pages.Playlist:
       //playlist
-      console.log("indexes = ")
-      console.log(indexes)
-      console.log("songs = ")
-      console.log(songs)
-      let plSongs = songs.filter((song, i) =>  indexes.includes(i) )
-      console.log("plSongs = ")
-      console.log(plSongs)
+      let plSongs = songs.filter((song, i) =>  indexes.includes(i))
       focusedPage = <Library header={playlist.name} setIndex={setSong} songs={plSongs} setSongs={setSongs}/>
       break;
     default:

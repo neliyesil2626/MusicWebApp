@@ -79,7 +79,7 @@ const SignUp = (props) => {
     // } 
   
     let button =<Button id="signup" onClick={() => {
-      signUpUser(username, email, password)
+      signUpUser(props.auth, username, email, password)
       setCreateUser(true);
     }}
       bg={COLOR.pink}
@@ -112,7 +112,7 @@ const SignUp = (props) => {
 const Login = (props) => {
     const[email, setEmail] = new useState("");
     const [password, setPassword] = new useState("");
-    let loginOnClick = () => {logInUser(email, password)}
+    let loginOnClick = () => {logInUser(props.auth, email, password)}
     let signoutOnClick = () => {
       signOut(props.auth).then(() => {
         props.setUid('')
