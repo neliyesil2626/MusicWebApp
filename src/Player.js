@@ -136,9 +136,9 @@ const Player = (song) => {
           marginLeft='22.5vw'
           w='54vw'
         >
-          <Image src={rewindpng} alt="rewindbutton" onClick={() => {prevSong()}} style={{width: BUTTON_SIZE}}/>
-          <Image src={playpng} alt="playpausebutton" onClick={playPause} id="playpausebutton" style={{width: BUTTON_SIZE}}/>
-          <Image src={fastForwardpng} alt="fastforwardbutton" onClick={() => {nextSong()}} style={{width: BUTTON_SIZE}}/>
+          <Image src={rewindpng} alt="rewindbutton" onClick={() => {prevSong()}} style={{width: BUTTON_SIZE}} draggable='false'/>
+          <Image src={playpng} alt="playpausebutton" onClick={playPause} id="playpausebutton" style={{width: BUTTON_SIZE}} draggable='false'/>
+          <Image src={fastForwardpng} alt="fastforwardbutton" onClick={() => {nextSong()}} style={{width: BUTTON_SIZE}} draggable='false'/>
           
           <HStack>
             <Text id="songtitle">{song.name}</Text>
@@ -150,12 +150,14 @@ const Player = (song) => {
             <Image src={shufflepng} alt="shufflebutton" onClick={() => {
                 console.log('setting shufflePlay to '+ !song.shufflePlay)
                 song.setShufflePlay(!song.shufflePlay)
-              }} style={{width: BUTTON_SIZE}} filter={shuffleFilter}/>
+              }} style={{width: BUTTON_SIZE}} filter={shuffleFilter}
+              draggable='false'/>
             <Image src={looppng} alt="loopbutton" onClick={() => {
                 console.log('setting loopPlay to: '+ !song.loopPlay)
                 song.setLoopPlay(!song.loopPlay)
-              }} style={{width: BUTTON_SIZE}} filter={loopFilter}/>
-            <Image src={queuepng} alt="queuebutton" onClick={() => {}} style={{width: BUTTON_SIZE}}/>
+              }} style={{width: BUTTON_SIZE}} filter={loopFilter}
+              draggable='false'/>
+            <Image src={queuepng} alt="queuebutton" onClick={() => {}} style={{width: BUTTON_SIZE}} draggable='false'/>
           </HStack>
         </HStack>
        <Center><HStack>
