@@ -30,7 +30,6 @@ export const formatTime = (seconds) => {
 
 
 const Player = (song) => {
-    console.log("reloading player")
     const [audio, setAudio] = useState(new Audio())
     const [playing, setPlaying] = useState(false)
     const [initialized, setInitialized] = useState(false)
@@ -168,12 +167,16 @@ const Player = (song) => {
             <Box id="progressbar" h='full' w={(timeStamp/timeDuration)*100+'%'} bg={COLOR.pink} borderRadius='3px'></Box>
           </Box>
           <Flex 
+            minW='10rem'
             onMouseOver={() => {
               setVolumeBar(10)
             }} 
             onMouseOut={() => {
-              setVolumeBar(0)
+              if(!document.hasFocus() || document.activeElement !== document.getElementById('slider-thumb-volume-container')){
+                setVolumeBar(0)
+              }
             }}
+            
             overflow='visible'
             h={(BUTTON_SIZE/2 + 10)+'px'}
           >
@@ -188,20 +191,26 @@ const Player = (song) => {
                 id='volume-container' 
                 bg='transparent'
                 w={volumeBar+'rem'}
-                h='full' borderRadius='3px' 
+                h='20px' borderRadius='3px' size='lg'
                 verticalAlign='center'
                 _hover={{cursor: 'pointer'}}
                 p='0'
                 ml='5px'
               >
-              <SliderTrack bg={COLOR.bgHover}>
-                                  <SliderFilledTrack bg={COLOR.pink}/>
+                
+              <SliderTrack id='volume-track' bg={COLOR.bgHover} h='7px' borderRadius='full'>
+                                  <SliderFilledTrack bg={COLOR.pink} h='7px' />
               </SliderTrack>
               <SliderThumb 
+                id='volume-thumb'
                 dragable='false' 
-                h='13px' w='13px' bg='transparent' 
-                _hover={{bg:COLOR.primaryFont}}
-                _active={{bg:COLOR.primaryFont, border:'0'}}
+                h='12px' w='12px' bg='transparent' 
+                _hover={{bg:COLOR.pink}}
+                _active={{bg:COLOR.pink, border:'0'}}
+                _focus={{outline:'0 !important'}}
+                onFocusUpCapture={()=>{
+                  console.log("released mouse");
+                }}
               />
             </Slider>
           </Flex>

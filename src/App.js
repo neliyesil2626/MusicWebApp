@@ -7,7 +7,7 @@ import LogInSignUp from './LogInSignUp.js';
 import {shuffle} from './Shuffle.js';
 import {theme, COLOR} from './ChakraTheme.js';
 import React,{useState, useEffect} from 'react';
-import { ChakraProvider, Flex, Button} from '@chakra-ui/react';
+import { ChakraProvider, Flex, Button, Spinner} from '@chakra-ui/react';
 import CreatePlaylist from './CreatePlaylist.js';
 import CreatePlaylistNotLoggedIn from './CreatePlaylistNotLoggedIn.js'
 import { getAuth } from 'firebase/auth';
@@ -223,16 +223,16 @@ function App() {
    * I added this conditional because I don't want to load the app unless the list of songs is loaded from the db. 
    */
   if(songs.length == 0 || typeof songs == Promise){ 
-    return <ChakraProvider theme={theme}>
-          <div className="App">
-            <div id="sidemenu">
-              <SideMenu page={page} setPage={setPage}></SideMenu>
-            </div>
-            <div id="pagecontent">
-              <SongAdder refresh={refresh} setRefresh={setRefresh}/>
-            </div>
-           </div>
-          </ChakraProvider>
+    let loadingScreen = <ChakraProvider theme={theme}>
+      <Flex h='100vh' w='100vw' bg={COLOR.bg2} alignItems='center'>
+        <Spinner 
+          position='fixed' 
+          left='calc(50vw - 5rem)'
+          color={COLOR.pink}
+          size='xl' />
+      </Flex>
+    </ChakraProvider>
+    return loadingScreen;      
   }
 
   let focusedPage;

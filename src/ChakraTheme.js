@@ -61,6 +61,7 @@ export const theme = extendTheme({
         cursor: 'pointer',
         color: COLOR.pink,
       },
+      
     })
   },
     // components: {

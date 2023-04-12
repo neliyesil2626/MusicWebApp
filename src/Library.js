@@ -126,7 +126,7 @@ import React,{useState} from 'react';
           <Td key={"album"} className="album" onClick={() => { rowOnClick(i)}} color={COLOR.tertiaryFont}>{song.album}</Td>
           <Td key={"editSong"} className="editsong" >{songEditMenu(song, setNewTitle, setNewAlbum, setNewArtist, onSubmit)}</Td>
       </Tr>);
-    let sideMenuWidth = document.getElementById("sidemenu").offsetWidth
+    let sideMenuWidth = (document.getElementById("sidemenu") === null)? 12 : document.getElementById("sidemenu").offsetWidth
     return (<Box 
               maxH='calc(100vh - 20px)'
               dispaly='inline-block'
