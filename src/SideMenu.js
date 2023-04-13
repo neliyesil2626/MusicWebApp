@@ -22,7 +22,7 @@ const playlistButton = (playlist, i, setPlaylist, setPage) => {
             >
                 
                 <Text  
-                        w='10rem'
+                        w='12rem'
                         h='fit-content'
                         overflow='hidden'
                         whiteSpace='nowrap'
@@ -57,13 +57,15 @@ const SideMenu = (props) => {
     }) : <Text>hi</Text>
     
     return <VStack id="sidemenu"
-                    w="12rem"
+                    w="16rem"
                     minHeight="99vh"
                     pt='15px'
+                    pl='15px'
                     bg={COLOR.bg2}
                     fontSize='1.3em'
+                    alignItems='flex-start'
             >
-            <Image src={logo} alt="logo" width='104px' align='center'/>
+            <Image src={logo} alt="logo" width='104px' align='center' ml='3rem'/>
             <VStack alignItems={'fex-start'}>
             {addSongButton}
             {createPlaylistButton}
