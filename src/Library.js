@@ -37,41 +37,41 @@ import React,{useState} from 'react';
 
  const menuItem = (objectID, type, attribute, set) => {
   return <HStack
-  ml='20px'
-  mr='20px'
->
-  <Input type="text" name={'song'+type} placeholder={attribute}
-    onChange={event => set(event.target.value)} 
-    borderColor={COLOR.secondaryFont} 
-    id={type+'edit'+objectID}
-    h='2em'
-    w='12em'></Input>
-  <CloseButton onClick={()=>{
-    document.getElementById(type+'edit'+objectID).value = '';
-    set(attribute);
-  }}
-  w='2em'
-  h='2em'
-  bg='transparent'
-  color={COLOR.secondaryFont}
-  _hover={{ color: COLOR.primaryFont, bg:COLOR.bg}}
-  ></CloseButton>
-</HStack>
+    ml='20px'
+    mr='20px'
+  >
+    <Input type="text" name={'song'+type} placeholder={attribute}
+      onChange={event => set(event.target.value)} 
+      borderColor={COLOR.secondaryFont} 
+      id={type+'edit'+objectID}
+      h='2em'
+      w='12em'></Input>
+    <CloseButton onClick={()=>{
+      document.getElementById(type+'edit'+objectID).value = '';
+      set(attribute);
+    }}
+      w='2em'
+      h='2em'
+      bg='transparent'
+      color={COLOR.secondaryFont}
+      _hover={{ color: COLOR.primaryFont, bg:COLOR.bg}}
+    ></CloseButton>
+  </HStack>
  }
  const songEditMenu = (song, setTitle, setAlbum, setArtist, onSubmit) => {
   return <Menu bg={COLOR.bg2} closeOnSelect={false} position='fixed'>
-  <MenuButton colorscheme='transparent' >•••</MenuButton>
-  <MenuList bg={COLOR.bg2}>
-    <MenuGroup title={'Edit '+song.name} >
-      <VStack>
-        {menuItem(song.objectID, 'name', song.name, setTitle)}
-        {menuItem(song.objectID, 'artist', song.artist, setArtist)}
-        {menuItem(song.objectID, 'album', song.album, setAlbum)}
-        <Button onClick={() => {onSubmit(song)}} bg={COLOR.pink} _hover={{ bg: COLOR.pinkHover }}>confirm</Button>
-      </VStack>
-    </MenuGroup>
-  </MenuList>
-</Menu>
+    <MenuButton colorscheme='transparent' >•••</MenuButton>
+      <MenuList bg={COLOR.bg2}>
+        <MenuGroup title={'Edit '+song.name} >
+          <VStack>
+            {menuItem(song.objectID, 'name', song.name, setTitle)}
+            {menuItem(song.objectID, 'artist', song.artist, setArtist)}
+            {menuItem(song.objectID, 'album', song.album, setAlbum)}
+            <Button onClick={() => {onSubmit(song)}} bg={COLOR.pink} _hover={{ bg: COLOR.pinkHover }}>confirm</Button>
+          </VStack>
+        </MenuGroup>
+    </MenuList>
+  </Menu>
  }
 
   const Library = (props) => {
@@ -119,6 +119,13 @@ import React,{useState} from 'react';
         borderBottom='none'
         _hover={{ bg: COLOR.bgHover }}
         h='2em'
+        onContextMenu={(event)=>{
+          props.enqueue(i)
+          if (typeof event.cancelable !== "boolean" || event.cancelable) {
+            // The event can be canceled, so we do so.
+            event.preventDefault();
+          } //prevent menu from popping up
+        }}
       >
           <Td key={"number"} className="number" color={COLOR.secondaryFont} w='1em' onClick={() => { rowOnClick(i)}}>{i+1}</Td>
           <Td key={"name"} className="name" paddingLeft='0' fontSize='1.2em' onClick={() => { rowOnClick(i)}}>{song.name}</Td>

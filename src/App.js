@@ -13,6 +13,7 @@ import CreatePlaylistNotLoggedIn from './CreatePlaylistNotLoggedIn.js'
 import { getAuth } from 'firebase/auth';
 import { initializeApp } from "firebase/app";
 import { useTheme } from '@emotion/react';
+import QueueMenu from './Queue.js';
 const fetchData = async (url) => {
   fetch('/library').then(
       (response) => response.json()
@@ -81,6 +82,7 @@ function App() {
   const [shufflePlay, setShufflePlay] = useState(false)
   const [loopPlay, setLoopPlay] = useState(false)
   const [queue, setQueue] = useState([])
+  const [showQueue, setShowQueue] = useState(false);
 
   const [app, setApp] = useState()
   const [auth, setAuth] = useState()
@@ -189,7 +191,12 @@ function App() {
 
 
   const incSong = () => {
-    let songIndexes = (shufflePlay)? shuffledIndexes : indexes
+    if(queue.length !== 0){
+      let nextSongIndex = queue[0]
+      dequeue(0)
+      setCurSongIndex(nextSongIndex)
+    }else {
+      let songIndexes = (shufflePlay)? shuffledIndexes : indexes
       let nextSongIndex = songIndexes.indexOf(curSongIndex) + 1
       if(nextSongIndex  >= songIndexes.length){
         nextSongIndex = 0
@@ -199,6 +206,7 @@ function App() {
       console.log('\n')
       setCurSongIndex(songIndexes[nextSongIndex])
       console.log(nextSongIndex+" incremented song to: "+songs[nextSongIndex].name)
+    }
   }
 
   const decSong = () => {
@@ -217,6 +225,23 @@ function App() {
   const loadSong = () => {
     setLoadingSong(true)
     setTimeout(setLoadingSong(false), 1000)//wait a second to finish loading the song
+  }
+
+  const enqueue = (i) => {
+    let newQ = queue.concat(indexes[i])
+    setQueue(newQ)
+    console.log('next queue = ')
+    console.log(newQ)
+    if(newQ.length === 1){
+      setShowQueue(true)
+    }
+  }
+  const dequeue = (i) => {
+    let newQ = queue.filter((song, j) => j !== i)
+    setQueue(newQ)
+    if(newQ.length === 0){
+      setShowQueue(false)
+    }
   }
 
   /*
@@ -239,7 +264,7 @@ function App() {
   switch(page) {
     case Pages.Library:
       // Library
-      focusedPage = <Library header='Library' setIndex={setSong} songs={songs} setSongs={setSongs}/>
+      focusedPage = <Library header='Library' setIndex={setSong} songs={songs} setSongs={setSongs} enqueue={enqueue}/>
       break;
     case Pages.AddSong:
       // AddSong
@@ -258,12 +283,13 @@ function App() {
     case Pages.Playlist:
       //playlist
       let plSongs = songs.filter((song, i) =>  indexes.includes(i))
-      focusedPage = <Library header={playlist.name} setIndex={setSong} songs={plSongs} setSongs={setSongs}/>
+      focusedPage = <Library header={playlist.name} setIndex={setSong} songs={plSongs} setSongs={setSongs} enqueue={enqueue}/>
       break;
     default:
       // code block
   }
-
+  
+  let queueMenu = (showQueue)? <QueueMenu songs={songs} queue={queue} dequeue={dequeue}/> : null;
   let loginButtonText = (uid === undefined || uid == '') ? 'Log in' : userName+' ▼'
   let playerHeight = (document.getElementById("player") !== null) ? document.getElementById("player").offsetHeight : 0
   let sideMenuWidth = (document.getElementById("sidemenu") !== null) ? document.getElementById("sidemenu").offsetWidth : 0
@@ -276,7 +302,6 @@ function App() {
             setPage={setPage} 
             playlists={playlists} 
             setPlaylist={setPlaylist}
-            
           ></SideMenu>
           <Flex id="pagecontent"
             w={'calc(100vw - '+sideMenuWidth+'px)'}
@@ -289,6 +314,7 @@ function App() {
           >
             {focusedPage} 
           </Flex>
+          {queueMenu}
         </Flex>
         <Player 
           name={songs[curSongIndex].name}
@@ -302,7 +328,8 @@ function App() {
           index = {curSongIndex}
           loopPlay={loopPlay} setLoopPlay={setLoopPlay}
           shufflePlay={shufflePlay} setShufflePlay={setShufflePlay}
-
+          showQueue={showQueue} setShowQueue={setShowQueue}
+          
         />
       </div>
       <Button id="loginbutton" onClick={() => {

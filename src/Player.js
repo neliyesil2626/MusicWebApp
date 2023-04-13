@@ -9,7 +9,14 @@ import shufflepng from './assets/ShufflePlay.svg';
 import queuepng from './assets/QueueSong.svg';
 import volumepng from './assets/volume control.svg';
 
-import { HStack, Box, Text, VStack, Center, Image, Spacer, Flex, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Icon} from '@chakra-ui/react'
+import { HStack, Box, Text, VStack, 
+         Center, Image, Spacer, Flex, 
+         Slider, SliderTrack, SliderFilledTrack, 
+         SliderThumb, Icon, useSlider,
+         Menu, MenuButton, MenuList, MenuGroup,
+         Input, CloseButton, Button,
+
+       } from '@chakra-ui/react'
 import { COLOR } from './ChakraTheme';
 import LoopIcon from './assets/LoopSong';
 const BUTTON_SIZE = 40;
@@ -27,7 +34,40 @@ export const formatTime = (seconds) => {
     //console.log("time formatted to: "+time)
     return time
   }
-
+  const menuItem = (song, i, dequeue) => {
+    return <HStack
+      ml='20px'
+      mr='20px'
+    >
+      
+      <CloseButton 
+        onClick={()=>{
+          dequeue(i)
+        }}
+        w='2em'
+        h='2em'
+        bg='transparent'
+        color={COLOR.secondaryFont}
+        _hover={{ color: COLOR.primaryFont, bg:COLOR.bg}}
+      ></CloseButton>
+    </HStack>
+   }
+   const queueMenu = (songs, dequeue) => {
+    let rows = songs.map((song, i) =>
+      {menuItem(song, i, dequeue)}
+    )
+    return <Menu bg={COLOR.bg2} closeOnSelect={false} position='fixed' p='0' >
+      <MenuButton colorscheme='transparent'>
+        <Image src={queuepng} alt="queuebutton" onClick={() => {}} style={{width: BUTTON_SIZE}} draggable='false'/>
+      </MenuButton>
+        <MenuList position='absolute' bg={COLOR.bg2} bottom='50px' zIndex='1' borderWidth='0' overflow='visible' >
+          <MenuGroup title={'Up Next'}>
+            {rows}
+          </MenuGroup>
+      </MenuList>
+      
+    </Menu>
+   }
 
 const Player = (song) => {
     const [audio, setAudio] = useState(new Audio())
@@ -41,6 +81,13 @@ const Player = (song) => {
     const [volumeBar, setVolumeBar] = useState(0)
     let loopFilter = (song.loopPlay) ? 'none' : 'grayscale()'
     let shuffleFilter = (song.shufflePlay) ? 'none' : 'grayscale()'
+
+    document.body.onmousedown = () => { // if the element clicked isn't the volume bar, hide the volume bar
+        setVolumeBar(0)
+    }
+    document.body.onscroll = () => {
+      console.log('scroll')
+    }
 
     React.useEffect(() => {
       console.log("Player.Audio changed to next song: "+song.name)
@@ -66,10 +113,7 @@ const Player = (song) => {
         setSongEnded(false)
       }
     }, [songEnded])
-  
-    
-  
-    
+
     if(!initialized){ //ensures that only one event listener is attached to audio. After all songs are loaded 
       audio.src = '/stream/'+song.curSongID
       audio.addEventListener("ended", async (event) =>{ 
@@ -156,7 +200,10 @@ const Player = (song) => {
                 song.setLoopPlay(!song.loopPlay)
               }} style={{width: BUTTON_SIZE}} filter={loopFilter}
               draggable='false'/>
-            <Image src={queuepng} alt="queuebutton" onClick={() => {}} style={{width: BUTTON_SIZE}} draggable='false'/>
+              <Image src={queuepng} alt="queuebutton" onClick={() => {
+                song.setShowQueue(!song.showQueue)
+              }} style={{width: BUTTON_SIZE}}
+              draggable='false'/>
           </HStack>
         </HStack>
        <Center><HStack>
@@ -181,7 +228,9 @@ const Player = (song) => {
             h={(BUTTON_SIZE/2 + 10)+'px'}
           >
             <Image src={volumepng} alt="fastforwardbutton" onClick={() => {muteVolume()}} h={(BUTTON_SIZE/2)+'px'} draggable='false' />
-            <Flex position='absolute' pl={BUTTON_SIZE/2+'px'}>
+            <Flex position='absolute' pl={BUTTON_SIZE/2+'px'}
+              
+            >
               <Slider
                 defaultValue={audio.volume * 100}
                 onChange={(percent)=> {
@@ -196,21 +245,20 @@ const Player = (song) => {
                 _hover={{cursor: 'pointer'}}
                 p='0'
                 ml='5px'
+                
               >
                 
-              <SliderTrack id='volume-track' bg={COLOR.bgHover} h='7px' borderRadius='full'>
-                                  <SliderFilledTrack bg={COLOR.pink} h='7px' />
+              <SliderTrack id='volume-track' bg={COLOR.bgHover} h='7px' borderRadius='full' >
+                <SliderFilledTrack bg={COLOR.pink} h='7px'/>
               </SliderTrack>
               <SliderThumb 
                 id='volume-thumb'
-                dragable='false' 
+                dragable='true' 
                 h='12px' w='12px' bg='transparent' 
                 _hover={{bg:COLOR.pink}}
                 _active={{bg:COLOR.pink, border:'0'}}
                 _focus={{outline:'0 !important'}}
-                onFocusUpCapture={()=>{
-                  console.log("released mouse");
-                }}
+                
               />
             </Slider>
           </Flex>

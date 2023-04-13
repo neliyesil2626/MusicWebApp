@@ -32,7 +32,11 @@ const playlistButton = (playlist, i, setPlaylist, setPage) => {
                         bgRepeat='repeat-y'
                         pl='1em'
                         borderRadius='5px'
-                        _hover={{ pr:'20px',w:'fit-content', cursor: 'pointer', color: COLOR.tertiaryFont, overflow:'visible', bg:COLOR.bg2}}
+                        _hover={{ pr:'20px',w:'fit-content', 
+                            cursor: 'pointer', color: COLOR.tertiaryFont,
+                            overflow:'visible', bg:COLOR.bg2,
+                            zIndex:1
+                        }}
                         onClick={()=>{
                             setPlaylist(playlist)
                             setPage(Pages.Playlist)
