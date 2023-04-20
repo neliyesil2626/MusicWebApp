@@ -6,8 +6,8 @@ import { Readable} from 'stream';
 import multer from 'multer';
 
 const MONGO_URL = 'mongodb://127.0.0.1:27017';
-const MONGO_DATABASE = "t"; // we're using the default test database
-const MONGO_LIBRARY = "library";
+const MONGO_DATABASE = "demo"; // we're using the default test database
+const MONGO_LIBRARY = "demolibrary";
 const MONGO_PLAYLISTS = "playlists";
 
 

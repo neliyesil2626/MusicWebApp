@@ -75,6 +75,7 @@ function App() {
   const [playlist, setPlaylist] = useState()
   const [isLoadingSong, setLoadingSong] = useState(false) //used when the song ends and the next song is starting
   const [refresh, setRefresh] = useState(false) //used to detect when db.library collection has updated
+  const [refreshPlaylists, setRefreshPlaylists] = useState(false) //detect when db.playlsits has updated (for a user)
   const [uid, setUid] = useState("")
   const [userName, setUsername] = useState("")
   const [page, setPage] = useState(Pages.Library)
@@ -98,6 +99,11 @@ function App() {
     console.log(indexes)
     console.log('\n')
   },[indexes])
+  React.useEffect(() => {
+    console.log("\n[shuffled index update] indexes = ")
+    console.log(shuffledIndexes)
+    console.log('\n')
+  },[shuffledIndexes])
   React.useEffect(() => { //set variables when song info is retrieved from backend.
     console.log("app is fetching data...")
     fetch('/library').then(
@@ -120,7 +126,7 @@ function App() {
     } else {
       console.log("logged out")
     }
-  }, [uid] );
+  }, [uid, refreshPlaylists] );
 
   React.useEffect(() => {
     if(songs === undefined || songs.length === 0){
@@ -153,14 +159,20 @@ function App() {
     console.log("useEffect[playlist]: page = " +page)
     let newIndexes = []
     if(page !== Pages.Library && playlist !== [] && playlist.songs !== undefined){
-      for(let i = 0; i < songs.length; i++){
-        if(playlist.songs.includes(songs[i].objectID)){
-          newIndexes.push(i)
+      // for(let i = 0; i < songs.length; i++){
+      //   if(playlist.songs.includes(songs[i].objectID)){
+      //     newIndexes.push(i)
+      //   }
+      // }
+      newIndexes = playlist.songs.map((objectID) => {
+        for(let i = 0; i < songs.length; i++){
+          if(songs[i].objectID === objectID){
+            return i;
+          }
         }
-      }
+        return -1;
+      })
       setIndexes(newIndexes)
-      console.log('useEffect[playlist]: Indexes = ')
-      console.log(newIndexes)
       if(shufflePlay){
         let newShuffledIndexes = shuffle(newIndexes)
         setShuffledIndexes(newShuffledIndexes)
@@ -247,7 +259,7 @@ function App() {
   /*
    * I added this conditional because I don't want to load the app unless the list of songs is loaded from the db. 
    */
-  if(songs.length == 0 || typeof songs == Promise){ 
+  if(songs.length === 0 || typeof songs == Promise){ 
     let loadingScreen = <ChakraProvider theme={theme}>
       <Flex h='100vh' w='100vw' bg={COLOR.bg2} alignItems='center'>
         <Spinner 
@@ -259,12 +271,31 @@ function App() {
     </ChakraProvider>
     return loadingScreen;      
   }
+  // if(songs.length == 0){ 
+  //   return <ChakraProvider theme={theme}>
+  //       <div className="App">
+  //         <Flex>
+  //           <Flex id="pagecontent"
+  //             w={'calc(100vw - '+16+'px)'}
+  //             h={'calc(100vh - '+0+'px)'}
+  //             position='relative'
+  //             overflow='hidden'
+  //             left='0'
+  //             p='0'
+  //             m='0'
+  //           >
+  //             <SongAdder refresh={refresh} setRefresh={setRefresh}/>
+  //           </Flex>
+  //         </Flex>
+  //       </div>
+  //     </ChakraProvider>;      
+  // }
 
   let focusedPage;
   switch(page) {
     case Pages.Library:
       // Library
-      focusedPage = <Library header='Library' setIndex={setSong} songs={songs} setSongs={setSongs} enqueue={enqueue}/>
+      focusedPage = <Library header='Library' setIndex={setSong} songs={songs} setSongs={setSongs} enqueue={enqueue} refresh={refresh} setRefresh={setRefresh}/>
       break;
     case Pages.AddSong:
       // AddSong
@@ -273,7 +304,7 @@ function App() {
     case Pages.CreatePlaylist:
       //CreatePlaylist
         focusedPage = (uid !== "") ? 
-        <CreatePlaylist uid={uid} setUid={setUid} songs={songs} setIndex={setCurSongIndex}></CreatePlaylist> :
+        <CreatePlaylist uid={uid} setUid={setUid} songs={songs} setIndex={setCurSongIndex} refresh={refreshPlaylists} setRefresh={setRefreshPlaylists}></CreatePlaylist> :
         <CreatePlaylistNotLoggedIn></CreatePlaylistNotLoggedIn>
       break;
     case Pages.Login:
@@ -282,8 +313,8 @@ function App() {
       break;
     case Pages.Playlist:
       //playlist
-      let plSongs = songs.filter((song, i) =>  indexes.includes(i))
-      focusedPage = <Library header={playlist.name} setIndex={setSong} songs={plSongs} setSongs={setSongs} enqueue={enqueue}/>
+      let plSongs = indexes.map(i => songs[i]);
+      focusedPage = <Library header={playlist.name} setIndex={setSong} songs={plSongs} setSongs={setSongs} enqueue={enqueue} refresh={refresh} setRefresh={setRefresh}/>
       break;
     default:
       // code block
@@ -322,8 +353,6 @@ function App() {
           curSongID={songs[curSongIndex].objectID} 
           next={incSong} 
           prev={decSong} 
-          isLoading = {isLoadingSong}
-          load = {loadSong}
           songs = {songs}
           index = {curSongIndex}
           loopPlay={loopPlay} setLoopPlay={setLoopPlay}

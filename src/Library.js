@@ -102,6 +102,7 @@ import React,{useState} from 'react';
         objectID: song.objectID
       }
       editSong(newSong)
+      props.setRefresh(!props.refresh)
 
     }
     const rowOnClick = (i) => {

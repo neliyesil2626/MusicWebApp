@@ -58,9 +58,7 @@ const CreatePlaylist = (props) => {
                 songs: songIndexes.map(i => props.songs[i].objectID)
             }
             addPlaylist(newPlaylist)
-            let refresh = props.uid
-            props.setUid("")
-            props.setUid(refresh)
+            props.setRefresh(!props.refresh);
         } else {
             alert("Your playlist must have a name.");
         }
