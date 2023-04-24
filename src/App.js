@@ -295,7 +295,7 @@ function App() {
   switch(page) {
     case Pages.Library:
       // Library
-      focusedPage = <Library header='Library' setIndex={setSong} songs={songs} setSongs={setSongs} enqueue={enqueue} refresh={refresh} setRefresh={setRefresh}/>
+      focusedPage = <Library header='Library' setIndex={setSong} songs={songs} setSongs={setSongs} enqueue={enqueue} refresh={refresh} setRefresh={setRefresh} page={page}/>
       break;
     case Pages.AddSong:
       // AddSong
@@ -314,7 +314,10 @@ function App() {
     case Pages.Playlist:
       //playlist
       let plSongs = indexes.map(i => songs[i]);
-      focusedPage = <Library header={playlist.name} setIndex={setSong} songs={plSongs} setSongs={setSongs} enqueue={enqueue} refresh={refresh} setRefresh={setRefresh}/>
+      focusedPage = <Library header={playlist.name} setIndex={setSong} 
+                             songs={plSongs} setSongs={setSongs} enqueue={enqueue} 
+                             refresh={refresh} setRefresh={setRefresh}
+                             page={page}/>
       break;
     default:
       // code block

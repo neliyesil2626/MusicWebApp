@@ -15,10 +15,13 @@ import {
   MenuGroup,
   VStack,
   HStack,
-  CloseButton
+  CloseButton,
+  Flex,
+  Center
 } from '@chakra-ui/react'
 import {COLOR} from './ChakraTheme.js';
 import React,{useState} from 'react';
+import Pages from './PageEnums.js';
   //using tempProps to prevent App.js:111 Uncaught TypeError: Cannot add property onClick, object is not extensible
 
   async function editSong(newSong) {
@@ -109,35 +112,40 @@ import React,{useState} from 'react';
       props.setIndex(i);
     }
 
-      tableHeaders = <Tr color={COLOR.secondaryFont} borderBottom='1px' borderColor={COLOR.secondaryFont} >
-                         <Td key="hnumber">#</Td>
-                         <Td key="hname">title</Td>
-                         <Td key="hartist">artist</Td>
-                         <Td key="halbum">album</Td>
-                         <Td key="heditsong"></Td>
-                     </Tr>; //header elements
-      tableBody = props.songs.map((song, i) => <Tr key={song.objectID} id={song.objectID} 
-        borderBottom='none'
-        _hover={{ bg: COLOR.bgHover }}
-        h='2em'
-        onContextMenu={(event)=>{
-          props.enqueue(i)
-          if (typeof event.cancelable !== "boolean" || event.cancelable) {
-            // The event can be canceled, so we do so.
-            event.preventDefault();
-          } //prevent menu from popping up
-        }}
-      >
-          <Td key={"number"} className="number" color={COLOR.secondaryFont} w='1em' onClick={() => { rowOnClick(i)}}>{i+1}</Td>
-          <Td key={"name"} className="name" paddingLeft='0' fontSize='1.2em' onClick={() => { rowOnClick(i)}}>{song.name}</Td>
-          <Td key={"artist"} className="artist" onClick={() => { rowOnClick(i)}} color={COLOR.secondaryFont}>{song.artist}</Td> 
-          <Td key={"album"} className="album" onClick={() => { rowOnClick(i)}} color={COLOR.tertiaryFont}>{song.album}</Td>
-          <Td key={"editSong"} className="editsong" >{songEditMenu(song, setNewTitle, setNewAlbum, setNewArtist, onSubmit)}</Td>
-      </Tr>);
+    tableHeaders = <Tr color={COLOR.secondaryFont} borderBottom='1px' borderColor={COLOR.secondaryFont} >
+                        <Td key="hnumber">#</Td>
+                        <Td key="hname">title</Td>
+                        <Td key="hartist">artist</Td>
+                        <Td key="halbum">album</Td>
+                        <Td key="heditsong"></Td>
+                    </Tr>; //header elements
+    tableBody = props.songs.map((song, i) => <Tr key={song.objectID} id={song.objectID} 
+      borderBottom='none'
+      _hover={{ bg: COLOR.bgHover }}
+      h='2em'
+      onContextMenu={(event)=>{
+        props.enqueue(i)
+        if (typeof event.cancelable !== "boolean" || event.cancelable) {
+          // The event can be canceled, so we do so.
+          event.preventDefault();
+        } //prevent menu from popping up
+      }}
+    >
+        <Td key={"number"} className="number" color={COLOR.secondaryFont} w='1em' onClick={() => { rowOnClick(i)}}>{i+1}</Td>
+        <Td key={"name"} className="name" paddingLeft='0' fontSize='1.2em' onClick={() => { rowOnClick(i)}}>{song.name}</Td>
+        <Td key={"artist"} className="artist" onClick={() => { rowOnClick(i)}} color={COLOR.secondaryFont}>{song.artist}</Td> 
+        <Td key={"album"} className="album" onClick={() => { rowOnClick(i)}} color={COLOR.tertiaryFont}>{song.album}</Td>
+        <Td key={"editSong"} className="editsong" >{songEditMenu(song, setNewTitle, setNewAlbum, setNewArtist, onSubmit)}</Td>
+    </Tr>);
+    let editPlaylist = (props.page === Pages.Playlist)? <Center>
+        <Text>Edit Playlist</Text>
+      </Center>:null
+      
+
     let sideMenuWidth = (document.getElementById("sidemenu") === null)? 12 : document.getElementById("sidemenu").offsetWidth
     return (<Box 
               maxH='calc(100vh - 20px)'
-              dispaly='inline-block'
+              display='inline-block'
               overflowY='scroll'
               overflowX='hidden'
               >
@@ -158,6 +166,7 @@ import React,{useState} from 'react';
                  {tableBody}
                 </Tbody>
               </Table>
+              {editPlaylist}
             </Box>);
   }
 

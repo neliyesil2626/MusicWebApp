@@ -92,6 +92,7 @@ const Player = (song) => {
     React.useEffect(() => {
       console.log("Player.Audio changed to next song: "+song.name)
       audio.src = '/stream/'+song.songs[song.index].objectID
+      document.title = song.name
       audio.load()
       setTimeout(() => { //used to ensure audio.play() doesn't conflict with audio.load()
         if(playing || playNextSong){ //why am I no longer getting No Audio Source error???
