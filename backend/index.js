@@ -153,10 +153,14 @@ const uploadSong = async (req, res) => {
 }
       
 // delete a song from the db
-const deleteSong = async (id) => {
+const deleteSong = async (id, name, objectID) => {
     const database = await getConnection();
+    let bucket = new GridFSBucket(database);
+    
     console.log("Deleting " + id)
-    await database.collection(MONGO_DATABASE).deleteOne({_id: ObjectId(id)});    
+    await database.collection(MONGO_LIBRARY).deleteOne({_id: ObjectId(id)});
+    await bucket.delete(ObjectId(objectID));  
+    console.log("Successfully Deleted "+name);  
 }
 
 // add a song to the db
@@ -207,8 +211,24 @@ const createPlaylist = async (name, userID, songs) => {
     }
     await database.collection(MONGO_PLAYLISTS).insertOne(newPlaylist);
 }
-const addSongToPlaylist = async (playlistID, song) => {
 
+const editPlaylist = async (id, name, songs) => {
+    const database = await getConnection();
+    console.log("connection = "+database);
+    var query = {_id: ObjectId(id)};
+    
+    var newvalues = { $set: { name: name, songs: songs} };
+    console.log('id = ' + ObjectId(id));
+    console.log('new name = '+ name);
+    console.log('new songs = '); console.log(songs);
+    await database.collection(MONGO_PLAYLISTS).updateOne(query, newvalues);
+    return true;
+}
+
+const deletePlaylist = async (id) => {
+    const database = await getConnection();
+    console.log("Deleting " + id)
+    await database.collection(MONGO_PLAYLISTS).deleteOne({_id: ObjectId(id)});    
 }
 
 // these are the routes for the backend APIs
@@ -264,10 +284,12 @@ const routes = [
         method: 'post',
         path: '/deletesong',
         handler: async (req, res) => {
-            const { _id } = req.body;
-            await deleteSong(_id);
+            const { id, name, objectID } = req.body;
+            await deleteSong(id, name, objectID);
             res.status(200).json({ status: "ok"});
         },
+    },
+    {
         method: 'post',
         path: '/editsong',
         handler: async (req, res) => {
@@ -293,6 +315,22 @@ const routes = [
         },
     },
     {
+        method: 'post',
+        path: '/editPlaylist',
+        handler: async (req, res) => {
+            const {id, name, userID, songs} = req.body;
+            let status = await editPlaylist(id, name, songs);
+            res.set({
+                'Access-Control-Allow-Origin' : '*', 
+                'Access-Control-Allow-Credentials' : true
+            });
+            if(status)
+                res.status(200).json({ status: "ok"});
+            else 
+                res.status(400).json({status: "not found"});
+        }
+    },
+    {
         method: 'get',
         path: '/userPlaylists/:userID',
         handler: async (req, res) => {
@@ -305,6 +343,15 @@ const routes = [
                 'Access-Control-Allow-Credentials' : true
             });
             res.status(200).json(values);
+        },
+    },
+    {
+        method: 'post',
+        path: '/deleteplaylist',
+        handler: async (req, res) => {
+            const { _id } = req.body;
+            await deletePlaylist(_id);
+            res.status(200).json({ status: "ok"});
         },
     },
 ];

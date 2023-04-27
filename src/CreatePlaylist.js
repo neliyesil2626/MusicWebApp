@@ -20,9 +20,10 @@ import {
   import logo from './assets/logo.svg'
   import {COLOR} from './ChakraTheme.js';
   import React,{useState} from 'react';
+import Pages from './PageEnums';
   
 
-  async function addPlaylist(newPlaylist) {
+  async function addPlaylist(id, newPlaylist) {
     //downloadFile(mp3File, "songtest.mp3")
     console.log("Playlist Name = "+newPlaylist.name+"\n"+
                 "Playlist UID = "+newPlaylist.userID+"\n"+
@@ -40,16 +41,47 @@ import {
     return response.json(); // parses JSON response into native JavaScript objects
   }
 
+  async function editPlaylist(id, newPlaylist) {
+    console.log("editing playlist :)"); 
+    newPlaylist.id = id;
+
+    console.log("Object ID = "+newPlaylist.id+"\n"+
+                "Playlist Name = "+newPlaylist.name+"\n"+
+                "Playlist UID = "+newPlaylist.userID+"\n"+
+                "Playlist Songs = ")
+                console.log(newPlaylist.songs)
+    //Default options are marked with *
+    const response = await fetch('/editPlaylist', {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': '*/*'
+      },
+      body: JSON.stringify(newPlaylist) // body data type must match "Content-Type" header
+    });
+    return response.json(); // parses JSON response into native JavaScript objects
+  }
+
 const CreatePlaylist = (props) => {
     let [name, setName] = useState("");
     let [songIndexes, setSongIndexes] = useState([]);
+    let [initialized, setInitialized] = useState(false);
     let selectSongTableHeaders = []
     let addedSongTableHeaders = []
     let selectSongTableBody = []
     let addedSongTableBody = []
+    let submitFunction = (props.page === Pages.CreatePlaylist)? addPlaylist: editPlaylist;
+    let pageTitle = (props.page === Pages.CreatePlaylist)? 'Create Playlist' : 'Edit '+props.name;
+    if(props.page === Pages.EditPlaylist && !initialized){
+        setSongIndexes(props.indexes)
+        setName(props.name)
+        setInitialized(true);
+    }
+    
     React.useEffect(() => {
         console.log(songIndexes);
     }, [songIndexes])
+    
     const onSubmit = () => {
         if(name != ""){
             let newPlaylist = {
@@ -57,12 +89,13 @@ const CreatePlaylist = (props) => {
                 userID: props.uid,
                 songs: songIndexes.map(i => props.songs[i].objectID)
             }
-            addPlaylist(newPlaylist)
+            submitFunction(props.playlistID, newPlaylist)
             props.setRefresh(!props.refresh);
         } else {
             alert("Your playlist must have a name.");
         }
     }
+
     const addSong = (i) => {
         console.log("adding song with index: "+i)
         if(!songIndexes.includes(i)){
@@ -136,9 +169,9 @@ const CreatePlaylist = (props) => {
         maxH={'calc(100vh - '+document.getElementById("player").offsetHeight+'px)'}
         pb='5rem'
         >
-            <Heading m='20px' >Create Playlist</Heading>
+            <Heading m='20px' >{pageTitle}</Heading>
             <VStack alignContent='flex-start'>
-                <Input type="text" name="playlistName" placeholder="Playlist Title" onChange={event => setName(event.target.value)} borderColor={COLOR.secondaryFont}w='24rem'></Input>
+                <Input type="text" name="playlistName" placeholder="Playlist Title" value={name} onChange={event => setName(event.target.value)} borderColor={COLOR.secondaryFont}w='24rem'></Input>
                 <HStack>
                     <Table className="songlist" 
                             alignSelf='flex-start'
@@ -172,7 +205,7 @@ const CreatePlaylist = (props) => {
                     </Table>
                     
                 </HStack>
-                <Center pt='20px'><Button onClick={onSubmit} bg={COLOR.pink} _hover={{ bg: COLOR.pinkHover }}>Create Playlist</Button></Center>
+                <Center pt='20px'><Button onClick={onSubmit} bg={COLOR.pink} _hover={{ bg: COLOR.pinkHover }}>{pageTitle}</Button></Center>
             </VStack>
     </Box>);
 }

@@ -22,6 +22,8 @@ import {
 import {COLOR} from './ChakraTheme.js';
 import React,{useState} from 'react';
 import Pages from './PageEnums.js';
+import {editPlaylist} from './DatabaseAccess.js';
+import EditSongPopUp from './EditSongPopup.js';
   //using tempProps to prevent App.js:111 Uncaught TypeError: Cannot add property onClick, object is not extensible
 
   async function editSong(newSong) {
@@ -81,9 +83,12 @@ import Pages from './PageEnums.js';
     let tableHeaders = []
     let tableBody = []
     let tableEdits = []
+    let title = ""
     const [newTitle, setNewTitle] = new useState("")
     const [newAlbum, setNewAlbum] = new useState("")
     const [newArtist, setNewArtist] = new useState("")
+    const [editTitle, setEditTitle] = new useState(false)
+    const [name, setName] = new useState(false)
     const onSubmit = (song) => {
       if(newTitle === '') {
         setNewTitle(song.name);
@@ -106,12 +111,10 @@ import Pages from './PageEnums.js';
       }
       editSong(newSong)
       props.setRefresh(!props.refresh)
-
     }
     const rowOnClick = (i) => {
       props.setIndex(i);
     }
-
     tableHeaders = <Tr color={COLOR.secondaryFont} borderBottom='1px' borderColor={COLOR.secondaryFont} >
                         <Td key="hnumber">#</Td>
                         <Td key="hname">title</Td>
@@ -131,17 +134,24 @@ import Pages from './PageEnums.js';
         } //prevent menu from popping up
       }}
     >
-        <Td key={"number"} className="number" color={COLOR.secondaryFont} w='1em' onClick={() => { rowOnClick(i)}}>{i+1}</Td>
-        <Td key={"name"} className="name" paddingLeft='0' fontSize='1.2em' onClick={() => { rowOnClick(i)}}>{song.name}</Td>
-        <Td key={"artist"} className="artist" onClick={() => { rowOnClick(i)}} color={COLOR.secondaryFont}>{song.artist}</Td> 
-        <Td key={"album"} className="album" onClick={() => { rowOnClick(i)}} color={COLOR.tertiaryFont}>{song.album}</Td>
-        <Td key={"editSong"} className="editsong" >{songEditMenu(song, setNewTitle, setNewAlbum, setNewArtist, onSubmit)}</Td>
+      <Td key={"number"} className="number" color={COLOR.secondaryFont} w='1em' onClick={() => { rowOnClick(i)}}>{i+1}</Td>
+      <Td key={"name"} className="name" paddingLeft='0' fontSize='1.2em' onClick={() => { rowOnClick(i)}}>{song.name}</Td>
+      <Td key={"artist"} className="artist" onClick={() => { rowOnClick(i)}} color={COLOR.secondaryFont}>{song.artist}</Td> 
+      <Td key={"album"} className="album" onClick={() => { rowOnClick(i)}} color={COLOR.tertiaryFont}>{song.album}</Td>
+      <Td key={"editSong"} className="editsong" ><EditSongPopUp song={song} setTitle={setNewTitle} setAlbum={setNewAlbum} setArtist={setNewArtist} onSubmit={onSubmit}/></Td>
     </Tr>);
+    
     let editPlaylist = (props.page === Pages.Playlist)? <Center>
-        <Text>Edit Playlist</Text>
+        <Text onClick={props.editPlaylist}>Edit Playlist</Text>
       </Center>:null
-      
 
+    if(props.page === Pages.Playlist){
+      title = (editTitle)? <Heading m='20px' onClick={() => {setEditTitle(true)}}><Input type="text" name="playlistName" placeholder="Playlist Title" value={props.header} onChange={event => setName(event.target.value)} borderColor={COLOR.secondaryFont}w='24rem'></Input></Heading> : 
+      <Heading m='20px' onClick={() => {setEditTitle(false)}}>{props.header}</Heading>
+    } else {
+      title = <Heading m='20px'>{props.header}</Heading>
+    } 
+    
     let sideMenuWidth = (document.getElementById("sidemenu") === null)? 12 : document.getElementById("sidemenu").offsetWidth
     return (<Box 
               maxH='calc(100vh - 20px)'

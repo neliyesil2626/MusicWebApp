@@ -256,6 +256,10 @@ function App() {
     }
   }
 
+  const editPlaylist = () => {
+    setPage(Pages.EditPlaylist);
+  }
+
   /*
    * I added this conditional because I don't want to load the app unless the list of songs is loaded from the db. 
    */
@@ -295,17 +299,25 @@ function App() {
   switch(page) {
     case Pages.Library:
       // Library
-      focusedPage = <Library header='Library' setIndex={setSong} songs={songs} setSongs={setSongs} enqueue={enqueue} refresh={refresh} setRefresh={setRefresh} page={page}/>
-      break;
+      focusedPage = <Library header={'Library'} setIndex={setSong} 
+                             songs={songs} setSongs={setSongs} enqueue={enqueue} 
+                             refresh={refresh} setRefresh={setRefresh}
+                             page={page}
+                             editPlaylist={editPlaylist}/>
+        break;
     case Pages.AddSong:
       // AddSong
       focusedPage = <SongAdder refresh={refresh} setRefresh={setRefresh}/>
       break;
     case Pages.CreatePlaylist:
       //CreatePlaylist
-        focusedPage = (uid !== "") ? 
-        <CreatePlaylist uid={uid} setUid={setUid} songs={songs} setIndex={setCurSongIndex} refresh={refreshPlaylists} setRefresh={setRefreshPlaylists}></CreatePlaylist> :
-        <CreatePlaylistNotLoggedIn></CreatePlaylistNotLoggedIn>
+      focusedPage = (uid !== "") ? 
+      <CreatePlaylist uid={uid} setUid={setUid} 
+        songs={songs} setIndex={setCurSongIndex}
+        refresh={refreshPlaylists} setRefresh={setRefreshPlaylists} 
+        page={page} indexes={indexes}
+      /> :
+      <CreatePlaylistNotLoggedIn/>
       break;
     case Pages.Login:
       //Login
@@ -317,8 +329,17 @@ function App() {
       focusedPage = <Library header={playlist.name} setIndex={setSong} 
                              songs={plSongs} setSongs={setSongs} enqueue={enqueue} 
                              refresh={refresh} setRefresh={setRefresh}
-                             page={page}/>
+                             page={page} editPlaylist={editPlaylist}/>
       break;
+    case Pages.EditPlaylist:
+      focusedPage = (uid !== "") ? 
+        <CreatePlaylist uid={uid} setUid={setUid} 
+          songs={songs} setIndex={setCurSongIndex}
+          refresh={refreshPlaylists} setRefresh={setRefreshPlaylists} 
+          page={page} indexes={indexes}
+          name={playlist.name} playlistID={playlist._id}
+        /> :
+        <CreatePlaylistNotLoggedIn/>
     default:
       // code block
   }
