@@ -52,7 +52,7 @@ import {
 
 const editSongInfo = (song, setTitle, setArtist, setAlbum, onSubmit, onClose) => {
   return <PopoverContent bg={COLOR.bg2} border='none' p='10px' >
-                    <PopoverHeader>{"Edit "+song.name}</PopoverHeader>
+                    <PopoverHeader color={COLOR.primaryFont}>{"Edit "+song.name}</PopoverHeader>
                     <PopoverCloseButton/>
                     <FocusLock returnFocus persistentFocus={false}>
                         <VStack pt='15px' alignItems='flex-start' pl='10px'>
@@ -84,7 +84,8 @@ const editSongInfo = (song, setTitle, setArtist, setAlbum, onSubmit, onClose) =>
 
 const deletionMenu = (song, onClose, refresh, setRefresh) => {
   return (<PopoverContent bg={COLOR.bg2} border='none' p='10px' w='fit-content'>
-            <Text color={COLOR.primaryFont} pb='15px'>{"Are you sure you want to remove "+song.name+" ?"}</Text>
+            <Text color={COLOR.primaryFont} pb='15px' pr='1.5rem'>{"Are you sure you want to remove "+song.name+"? "}</Text>
+            <PopoverCloseButton/>
             <ButtonGroup display='flex' alignSelf='center' justifyContent='flex-end'>
                                 <Button  
                                     onClick={() => {onClose()}}
@@ -112,7 +113,9 @@ const deletionMenu = (song, onClose, refresh, setRefresh) => {
 
 const selectionMenu = (setMenuFocus, DELETE, EDIT) => {
   
-  return (<PopoverContent bg={COLOR.bg2} border='none' p='10px' w='fit-content'>
+  return (<PopoverContent bg={COLOR.bg2} border='none' 
+          p='10px' w='fit-content'
+          _hover={{cursor:'default'}}>
             <HStack pr='1rem'>
               <IconButton icon={<EditIcon/>} 
                     bg='transparent'
@@ -158,6 +161,7 @@ const EditSongPopUp = (props) => {
               onClose={() => {
                 setMenuFocus(FOCUS.SELECT)}
               }
+              _hover={{cursor:'default'}}
           >
               <PopoverTrigger><Text fontSize='1.2rem'>•••</Text></PopoverTrigger>
               {focusedPage}

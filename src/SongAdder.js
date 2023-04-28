@@ -46,6 +46,7 @@ import logo from './assets/logo.svg'
     document.getElementsByName("songTitle")[0].value = ""
     document.getElementsByName("songArtist")[0].value = ""
     document.getElementsByName("songAlbum")[0].value = ""
+    document.getElementById("upload").value="";
   }
   const SongAdder = (props) => {
     const [title, setTitle] = useState("")
@@ -114,11 +115,43 @@ import logo from './assets/logo.svg'
         borderColor={COLOR.secondaryFont}
       ></Divider>
       <Heading m='20px'>Add Song</Heading>
-      <Input type="text" name="songTitle" placeholder="Title" onChange={event => setTitle(event.target.value)} borderColor={COLOR.secondaryFont}w='24rem'></Input>
-      <Input type="text" name="songArtist" placeholder="Artist" onChange={event => setArtist(event.target.value)} borderColor={COLOR.secondaryFont}w='24rem'></Input>
-      <Input type="text" name="songAlbum" placeholder="Album" onChange={event => setAlbum(event.target.value)} borderColor={COLOR.secondaryFont}w='24rem'></Input>
-      <Input id="upload" type="file" accept=".mp3" placeholder="Upload File" onChange={event => onUpload(event.target.value)} border='none'w='24rem'></Input>
-      <Center><Button onClick={onSubmit} bg={COLOR.pink} _hover={{ bg: COLOR.pinkHover }}>addSong</Button></Center><Text id="validupdateprompt">{validUploadPrompt}</Text>
+      <Input type="text" name="songTitle" placeholder="Title" 
+       onChange={event => setTitle(event.target.value)} 
+       borderColor={COLOR.secondaryFont}w='24rem' id="songTitleInput"
+       onKeyUp={(event) => {
+        if(event.key === 'Enter'){
+          document.getElementById("songArtistInput").focus()
+        }
+       }}
+       ></Input>
+      <Input type="text" name="songArtist" placeholder="Artist"
+       onChange={event => setArtist(event.target.value)} 
+       borderColor={COLOR.secondaryFont}w='24rem' id="songArtistInput"
+       onKeyUp={(event) => {
+        if(event.key === 'Enter'){
+          document.getElementById("songAlbumInput").focus()
+        }
+       }}
+       ></Input>
+      <Input type="text" name="songAlbum" placeholder="Album"
+       onChange={event => setAlbum(event.target.value)} 
+       borderColor={COLOR.secondaryFont}w='24rem' id="songAlbumInput"
+       onKeyUp={(event) => {
+        if(event.key === 'Enter'){
+          document.getElementById("upload").focus()
+        }
+       }}
+       ></Input>
+      <Input id="upload" type="file" accept=".mp3" placeholder="Upload File" 
+       onChange={event => onUpload(event.target.value)} 
+       border='none'w='24rem'
+       onKeyUp={(event) => {
+        if(document.getElementById("upload").files.length !== 0 && event.key === 'Enter'){
+          document.getElementById("addSongButton").focus()
+        }
+       }}
+       ></Input>
+      <Center><Button id='addSongButton' onClick={onSubmit} bg={COLOR.pink} _hover={{ bg: COLOR.pinkHover }}>addSong</Button></Center><Text id="validupdateprompt">{validUploadPrompt}</Text>
     </VStack>
   }
   export default SongAdder
