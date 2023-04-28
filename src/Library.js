@@ -138,7 +138,12 @@ import EditSongPopUp from './EditSongPopup.js';
       <Td key={"name"} className="name" paddingLeft='0' fontSize='1.2em' onClick={() => { rowOnClick(i)}}>{song.name}</Td>
       <Td key={"artist"} className="artist" onClick={() => { rowOnClick(i)}} color={COLOR.secondaryFont}>{song.artist}</Td> 
       <Td key={"album"} className="album" onClick={() => { rowOnClick(i)}} color={COLOR.tertiaryFont}>{song.album}</Td>
-      <Td key={"editSong"} className="editsong" ><EditSongPopUp song={song} setTitle={setNewTitle} setAlbum={setNewAlbum} setArtist={setNewArtist} onSubmit={onSubmit}/></Td>
+      <Td key={"editSong"} className="editsong" >
+        <EditSongPopUp 
+          song={song} setTitle={setNewTitle} 
+          setAlbum={setNewAlbum} setArtist={setNewArtist} 
+          onSubmit={onSubmit} refresh={props.refresh} setRefresh={props.setRefresh}/>
+      </Td>
     </Tr>);
     
     let editPlaylist = (props.page === Pages.Playlist)? <Center>
