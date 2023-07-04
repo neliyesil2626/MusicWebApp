@@ -1,6 +1,6 @@
 
 import React,{useState,useEffect} from 'react';
-import { Text, Heading, Button, VStack, Input, Flex, Image, Divider, Box} from '@chakra-ui/react';
+import { Text, Heading, Button, VStack, Input, Flex, Image, Divider, Box, HStack} from '@chakra-ui/react';
 import { COLOR } from './ChakraTheme';
 import { initializeApp } from "firebase/app";
 import { getAuth, 
@@ -24,28 +24,34 @@ const image = () => {
   </Box>
 }
 const signUpUser = (auth, username, email, password) => {
-    console.log("logging in new user as:")
-    console.log(username+"\n"+email+"\n"+password)
-    createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
-        const user = userCredential.user;
-      }).catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-      });
-  }
-  const logInUser = (auth, email, password) => {
-    console.log("logging in: "+email )
-    signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
+  console.log("logging in new user as:")
+  console.log(username+"\n"+email+"\n"+password)
+  createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
       const user = userCredential.user;
-      console.log("user = ")
-      console.log(user);
-    })
-    .catch((error) => {
+    }).catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
     });
-  }
+}
+const logInUser = (auth, email, password) => {
+  console.log("logging in: "+email )
+  signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    const user = userCredential.user;
+    console.log("user = ")
+    console.log(user);
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    if(errorCode === 'auth/invalid-email'){
+      document.getElementById('validloginprompt').textContent = 'invalid email address'
+    } else {
+      document.getElementById('validloginprompt').textContent = 'invalid password'
+    }
+    
+  });
+}
 
 const SignUp = (props) => {
     const [username, setUsername] = new useState("");
@@ -84,15 +90,40 @@ const SignUp = (props) => {
     }}
       bg={COLOR.pink}
       _hover={{ bg: COLOR.pinkHover }}
+      className='textform'
     >Sign Up</Button>
     let logInPrompt = <p>Have an account?<em id="switchToLogIn" onClick={() => {props.setSignUp(false)}}> Log in </em></p>
   
     return <VStack className="logincomponent">
       {image()}
     <Heading m='20px' pb='20px' >Sign Up</Heading>
-      <Input type="text" name="logInUserName" placeholder="Username" onChange={event => setUsername(event.target.value)} borderColor={COLOR.secondaryFont} w='24rem'></Input>
-      <Input type="text" name="logInEmail" placeholder="Email" onChange={event => setEmail(event.target.value)} borderColor={COLOR.secondaryFont} w='24rem'></Input>
-      <Input type="text" name="logInPassword" placeholder="Password" onChange={event => setPassword(event.target.value)} borderColor={COLOR.secondaryFont} w='24rem'></Input>
+      <Input 
+        type="text" 
+        name="logInUserName" 
+        placeholder="Username" 
+        onChange={event => setUsername(event.target.value)} 
+        borderColor={COLOR.secondaryFont} 
+        w='24rem'
+        className='textform'
+      ></Input>
+      <Input 
+        type="text" 
+        name="logInEmail" 
+        placeholder="Email" 
+        onChange={event => setEmail(event.target.value)} 
+        borderColor={COLOR.secondaryFont} 
+        w='24rem'
+        className='textform'
+      ></Input>
+      <Input 
+        type="text" 
+        name="logInPassword" 
+        placeholder="Password" 
+        onChange={event => setPassword(event.target.value)} 
+        borderColor={COLOR.secondaryFont} 
+        w='24rem'
+        className='textform'
+      ></Input>
       <div><center>{button}</center>{logInPrompt}</div>
   </VStack>
   }
@@ -139,14 +170,42 @@ const Login = (props) => {
       let button = <Button id="submitloginbutton" onClick={loginOnClick}
       bg={COLOR.pink}
       _hover={{ bg: COLOR.pinkHover }}
+      className='textform'
     >Log in</Button> 
       let signUpPrompt = <p>No account? <em id="switchToSignUp" onClick={() => {props.setSignUp(true)}}>Sign up</em></p>
       return <VStack className="logincomponent">
         {image()}
         <Heading m='20px'pb='20px'>Login</Heading>
-          <div><Input type="text" name="logInEmail" placeholder="Email" onChange={event => setEmail(event.target.value)} borderColor={COLOR.secondaryFont} w='24rem'></Input></div>
-          <div><Input type="text" name="logInPassword" placeholder="Password" onChange={event => setPassword(event.target.value)} borderColor={COLOR.secondaryFont} w='24rem'></Input></div>
-          <div id="loginsignout"><center>{button}</center>{signUpPrompt}</div>
+          <div><Input 
+                type="text" 
+                name="logInEmail" 
+                placeholder="Email" 
+                onChange={event => setEmail(event.target.value)} 
+                borderColor={COLOR.secondaryFont} 
+                w='24rem'
+                className='textform'
+              ></Input></div>
+          <div><Input 
+                  type="text" 
+                  name="logInPassword" 
+                  placeholder="Password" 
+                  onChange={event => setPassword(event.target.value)} 
+                  borderColor={COLOR.secondaryFont} 
+                  w='24rem'
+                  className='textform'
+                ></Input></div>
+          <VStack id="loginsignout">
+            <HStack alignItems='center'>
+              <Text id='validloginprompt' 
+                position='fixed' 
+                color={COLOR.pink}
+                pl='6rem'
+              />
+              {button}
+            </HStack>
+            {signUpPrompt}
+            
+          </VStack>
       </VStack>
     } 
 

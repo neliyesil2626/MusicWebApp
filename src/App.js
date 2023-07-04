@@ -87,12 +87,35 @@ function App() {
 
   const [app, setApp] = useState()
   const [auth, setAuth] = useState()
+  let focusedPage;
+
   if(auth === null || auth === undefined){
     console.log("connecting to firebase...")
     let connection = connectFirebase()
     setApp(connection.app)
     setAuth(connection.auth)
   }
+  React.useEffect(()=>{
+    let inputs = document.getElementsByClassName("textform")
+    for(let i = 0; i<inputs.length; i++){
+      let input = inputs[i]
+      let nextInput = (i+1 != inputs.length)? inputs[i+1] : input
+      let prevInput = (i != 0)? inputs[i-1] : input
+      input.onkeyup=(event) => {
+        // console.log("next input = ")
+        // console.log(nextInput)
+        switch(event.key) {
+          case 'Enter':
+          case 'ArrowDown':
+            nextInput.focus()
+            break
+          case 'ArrowUp':
+            prevInput.focus()
+          default:
+        }
+       }
+    }
+  })
 
   React.useEffect(() => {
     console.log("\n[index update] indexes = ")
@@ -149,7 +172,7 @@ function App() {
           setShuffledIndexes(newShuffledIndexes)
           setCurSongIndex(newShuffledIndexes[0])
         } else {
-          setCurSongIndex(newIndexes[0])
+          setCurSongIndex(newIndexes[0]) // 5/18 error Not this line
         }
       }
       console.log('useEffect[page,songs] curSongIndex = '+ curSongIndex)
@@ -171,17 +194,33 @@ function App() {
           }
         }
         return -1;
-      })
+      }).filter(i => i != -1)
       setIndexes(newIndexes)
       if(shufflePlay){
         let newShuffledIndexes = shuffle(newIndexes)
         setShuffledIndexes(newShuffledIndexes)
         setCurSongIndex(newShuffledIndexes[0])
+        
       } else {
         setCurSongIndex(newIndexes[0])
+        console.log("after line 205")
       }
     }
+    
    }, [playlist])
+
+   //used to update the playlist page after a song gets deleted
+   React.useEffect(()=>{
+    if(page === Pages.Playlist){
+      let plSongs = indexes.map(i => songs[i]);
+      focusedPage = <Library header={playlist.name} setIndex={setSong} 
+                             songs={plSongs} setSongs={setSongs} enqueue={enqueue} 
+                             refresh={refresh} setRefresh={setRefresh}
+                             refreshPlaylists={refreshPlaylists} setRefreshPlaylists={setRefreshPlaylists}
+                             page={page} editPlaylist={editPlaylist}
+                             playlist={playlist}/>
+    }
+   },[indexes])
   
   React.useEffect(() => {
     if(auth.currentUser !== undefined && auth.currentUser !== null){
@@ -199,8 +238,6 @@ function App() {
       console.log(newShuffledIndexes)
     }
   }, [shufflePlay] );
-
-
 
   const incSong = () => {
     if(queue.length !== 0){
@@ -232,6 +269,7 @@ function App() {
   }
   const setSong = (i) => {
     setCurSongIndex(indexes[i])
+    console.log("setSong called")
   }
 
   const loadSong = () => {
@@ -295,7 +333,7 @@ function App() {
   //     </ChakraProvider>;      
   // }
 
-  let focusedPage;
+  
   switch(page) {
     case Pages.Library:
       // Library
@@ -315,7 +353,7 @@ function App() {
       <CreatePlaylist uid={uid} setUid={setUid} 
         songs={songs} setIndex={setCurSongIndex}
         refresh={refreshPlaylists} setRefresh={setRefreshPlaylists} 
-        page={page} indexes={indexes}
+        page={page} setPage={setPage} indexes={indexes}
       /> :
       <CreatePlaylistNotLoggedIn/>
       break;
@@ -329,14 +367,16 @@ function App() {
       focusedPage = <Library header={playlist.name} setIndex={setSong} 
                              songs={plSongs} setSongs={setSongs} enqueue={enqueue} 
                              refresh={refresh} setRefresh={setRefresh}
-                             page={page} editPlaylist={editPlaylist}/>
+                             refreshPlaylists={refreshPlaylists} setRefreshPlaylists={setRefreshPlaylists}
+                             page={page} editPlaylist={editPlaylist}
+                             playlist={playlist}/>
       break;
     case Pages.EditPlaylist:
       focusedPage = (uid !== "") ? 
         <CreatePlaylist uid={uid} setUid={setUid} 
           songs={songs} setIndex={setCurSongIndex}
           refresh={refreshPlaylists} setRefresh={setRefreshPlaylists} 
-          page={page} indexes={indexes}
+          page={page} setPage={setPage} indexes={indexes}
           name={playlist.name} playlistID={playlist._id}
         /> :
         <CreatePlaylistNotLoggedIn/>

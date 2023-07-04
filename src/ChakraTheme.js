@@ -14,6 +14,10 @@ export const COLOR = {
   tertiaryFont: 'gray.400',
   progressBar: 'progress.100',
 }
+const inputKeyHandler = () => {
+  console.log('css triggered')
+}
+
 export const theme = extendTheme({
   colors: {
     cat:{
@@ -61,7 +65,6 @@ export const theme = extendTheme({
         cursor: 'pointer',
         color: COLOR.pink,
       },
-      
     })
   },
     // components: {

@@ -116,6 +116,7 @@ import logo from './assets/logo.svg'
       ></Divider>
       <Heading m='20px'>Add Song</Heading>
       <Input type="text" name="songTitle" placeholder="Title" 
+        className='textform'
        onChange={event => setTitle(event.target.value)} 
        borderColor={COLOR.secondaryFont}w='24rem' id="songTitleInput"
        onKeyUp={(event) => {
@@ -125,6 +126,7 @@ import logo from './assets/logo.svg'
        }}
        ></Input>
       <Input type="text" name="songArtist" placeholder="Artist"
+        className='textform'
        onChange={event => setArtist(event.target.value)} 
        borderColor={COLOR.secondaryFont}w='24rem' id="songArtistInput"
        onKeyUp={(event) => {
@@ -134,6 +136,7 @@ import logo from './assets/logo.svg'
        }}
        ></Input>
       <Input type="text" name="songAlbum" placeholder="Album"
+        className='textform'
        onChange={event => setAlbum(event.target.value)} 
        borderColor={COLOR.secondaryFont}w='24rem' id="songAlbumInput"
        onKeyUp={(event) => {
@@ -143,6 +146,7 @@ import logo from './assets/logo.svg'
        }}
        ></Input>
       <Input id="upload" type="file" accept=".mp3" placeholder="Upload File" 
+       className='textform'
        onChange={event => onUpload(event.target.value)} 
        border='none'w='24rem'
        onKeyUp={(event) => {
@@ -151,7 +155,7 @@ import logo from './assets/logo.svg'
         }
        }}
        ></Input>
-      <Center><Button id='addSongButton' onClick={onSubmit} bg={COLOR.pink} _hover={{ bg: COLOR.pinkHover }}>addSong</Button></Center><Text id="validupdateprompt">{validUploadPrompt}</Text>
+      <Center><Button id='addSongButton' className='textform' onClick={onSubmit} bg={COLOR.pink} _hover={{ bg: COLOR.pinkHover }}>addSong</Button></Center><Text id="validupdateprompt">{validUploadPrompt}</Text>
     </VStack>
   }
   export default SongAdder

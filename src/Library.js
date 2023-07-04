@@ -20,9 +20,8 @@ import {
   Center
 } from '@chakra-ui/react'
 import {COLOR} from './ChakraTheme.js';
-import React,{useState} from 'react';
+import React,{useState, useEffect} from 'react';
 import Pages from './PageEnums.js';
-import {editPlaylist} from './DatabaseAccess.js';
 import EditSongPopUp from './EditSongPopup.js';
   //using tempProps to prevent App.js:111 Uncaught TypeError: Cannot add property onClick, object is not extensible
 
@@ -112,9 +111,11 @@ import EditSongPopUp from './EditSongPopup.js';
       editSong(newSong)
       props.setRefresh(!props.refresh)
     }
+
     const rowOnClick = (i) => {
       props.setIndex(i);
     }
+
     tableHeaders = <Tr color={COLOR.secondaryFont} borderBottom='1px' borderColor={COLOR.secondaryFont} >
                         <Td key="hnumber">#</Td>
                         <Td key="hname">title</Td>
@@ -141,8 +142,11 @@ import EditSongPopUp from './EditSongPopup.js';
       <Td key={"editSong"} className="editsong" >
         <EditSongPopUp 
           song={song} setTitle={setNewTitle} 
+          playlist={props.playlist}
           setAlbum={setNewAlbum} setArtist={setNewArtist} 
-          onSubmit={onSubmit} refresh={props.refresh} setRefresh={props.setRefresh}/>
+          onSubmit={onSubmit} refresh={props.refresh} setRefresh={props.setRefresh}
+          refreshPlaylists={props.refreshPlaylists} setRefreshPlaylists={props.setRefreshPlaylists}
+          page={props.page}/>
       </Td>
     </Tr>);
     
