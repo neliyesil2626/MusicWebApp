@@ -22,23 +22,11 @@ import {
 import {COLOR} from './ChakraTheme.js';
 import React,{useState} from 'react';
 import Pages from './PageEnums.js';
-import {editPlaylist} from './DatabaseAccess.js';
+import {editSong} from './DatabaseAccess.js';
 import EditSongPopUp from './EditSongPopup.js';
   //using tempProps to prevent App.js:111 Uncaught TypeError: Cannot add property onClick, object is not extensible
 
-  async function editSong(newSong) {
-    // Default options are marked with *
-    console.log(JSON.stringify(newSong));
-    const response = await fetch('/editsong', {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': '*/*'
-      },
-      body: JSON.stringify(newSong) // body data type must match "Content-Type" header
-    });
-    return response.json(); // parses JSON response into native JavaScript objects
-  }
+
 
  const menuItem = (objectID, type, attribute, set) => {
   return <HStack

@@ -2,46 +2,9 @@ import React,{useState} from 'react';
 
 import { Text, Center, Heading, Button, VStack, Input, Image, Divider, Flex} from '@chakra-ui/react';
 import { COLOR } from './ChakraTheme';
-import logo from './assets/logo.svg'
+import logo from './assets/logo.svg';
+import { uploadSong,addSong } from './DatabaseAccess';
 
-  //got this from: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-  async function addSong(newSong) {
-    //downloadFile(mp3File, "songtest.mp3")
-    console.log("Song Title = "+newSong.name+"\n"+
-                "Song Artist = "+newSong.artist+"\n"+
-                "Song Album = "+newSong.album+"\n"+
-                "Song Duration = "+newSong.duration+"\n"+
-                "Song ID = "+ newSong.objectID)
-    // Default options are marked with *
-    const response = await fetch('/addsong', {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newSong) // body data type must match "Content-Type" header
-    });
-    return response.json(); // parses JSON response into native JavaScript objects
-  }
-  
-  //used to upload an mp3 file to the backend server. 
-  //found out how to use formData from https://stackoverflow.com/questions/5587973/javascript-upload-file
-  async function uploadSong(newSongFile){
-    return new Promise(async(res,rej) => {
-      console.log("uploading song: "+newSongFile.name);
-      console.log(newSongFile)
-      let formData = new FormData()
-      formData.append("name", newSongFile.name)
-      formData.append("track", newSongFile)
-        const response = await fetch('/uploadsong', {
-          method: 'POST', // *GET, POST, PUT, DELETE, etc.
-          body: formData // body data type must match "Content-Type" header
-        });
-        let id = response.text()
-        console.log("response complete: "+id)
-        res(id)
-    })
-         //returns the id returned from the http post response 
-  }
   const clearSongAdderInputs = () => {
     document.getElementsByName("songTitle")[0].value = ""
     document.getElementsByName("songArtist")[0].value = ""

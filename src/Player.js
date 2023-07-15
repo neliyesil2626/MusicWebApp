@@ -8,6 +8,7 @@ import looppng from './assets/LoopSong.svg';
 import shufflepng from './assets/ShufflePlay.svg';
 import queuepng from './assets/QueueSong.svg';
 import volumepng from './assets/volume control.svg';
+import {URL} from './DatabaseAccess';
 
 import { HStack, Box, Text, VStack, 
          Center, Image, Spacer, Flex, 
@@ -91,7 +92,7 @@ const Player = (song) => {
 
     React.useEffect(() => {
       console.log("Player.Audio changed to next song: "+song.name)
-      audio.src = '/stream/'+song.songs[song.index].objectID
+      audio.src = URL+'/stream/'+song.songs[song.index].objectID
       document.title = song.name
       audio.load()
       setTimeout(() => { //used to ensure audio.play() doesn't conflict with audio.load()

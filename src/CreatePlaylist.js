@@ -17,50 +17,10 @@ import {
     Tbody,
     Thead
   } from '@chakra-ui/react'
-  import logo from './assets/logo.svg'
   import {COLOR} from './ChakraTheme.js';
   import React,{useState} from 'react';
-import Pages from './PageEnums';
-  
-
-  async function addPlaylist(id, newPlaylist) {
-    //downloadFile(mp3File, "songtest.mp3")
-    console.log("Playlist Name = "+newPlaylist.name+"\n"+
-                "Playlist UID = "+newPlaylist.userID+"\n"+
-                "Playlist Songs = ")
-                console.log(newPlaylist.songs)
-    // Default options are marked with *
-    const response = await fetch('/createPlaylist', {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': '*/*'
-      },
-      body: JSON.stringify(newPlaylist) // body data type must match "Content-Type" header
-    });
-    return response.json(); // parses JSON response into native JavaScript objects
-  }
-
-  async function editPlaylist(id, newPlaylist) {
-    console.log("editing playlist :)"); 
-    newPlaylist.id = id;
-
-    console.log("Object ID = "+newPlaylist.id+"\n"+
-                "Playlist Name = "+newPlaylist.name+"\n"+
-                "Playlist UID = "+newPlaylist.userID+"\n"+
-                "Playlist Songs = ")
-                console.log(newPlaylist.songs)
-    //Default options are marked with *
-    const response = await fetch('/editPlaylist', {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': '*/*'
-      },
-      body: JSON.stringify(newPlaylist) // body data type must match "Content-Type" header
-    });
-    return response.json(); // parses JSON response into native JavaScript objects
-  }
+  import Pages from './PageEnums';
+  import { addPlaylist, editPlaylist } from './DatabaseAccess';
 
 const CreatePlaylist = (props) => {
     let [name, setName] = useState("");

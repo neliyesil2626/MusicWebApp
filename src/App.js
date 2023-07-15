@@ -12,40 +12,11 @@ import CreatePlaylist from './CreatePlaylist.js';
 import CreatePlaylistNotLoggedIn from './CreatePlaylistNotLoggedIn.js'
 import { getAuth } from 'firebase/auth';
 import { initializeApp } from "firebase/app";
-import { useTheme } from '@emotion/react';
 import QueueMenu from './Queue.js';
-const fetchData = async (url) => {
-  fetch('/library').then(
-      (response) => response.json()
-    ).then((value) => {
-      return value;
-    });
-}
+import { getLibrary, getUserPlayLists } from './DatabaseAccess.js';
 
-//got this from: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-async function deleteData(id) {
-  // Default options are marked with *
-  const response = await fetchData('/deletesong', {
-    method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: '{"_id": "'+id+'"}'// body data type must match "Content-Type" header
-  });
-  return response.json(); // parses JSON response into native JavaScript objects
-}
 
 //got code from: https://stackoverflow.com/questions/3749231/download-file-using-javascript-jquery
-const downloadFile = (file, fileName) => {
-  const url = URL.createObjectURL(file)
-  const a = document.createElement('a');
-  a.style.display = 'none';
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  window.URL.revokeObjectURL(url);
-}
 
 const connectFirebase = () => {
   const firebaseConfig = {
@@ -106,23 +77,12 @@ function App() {
   },[shuffledIndexes])
   React.useEffect(() => { //set variables when song info is retrieved from backend.
     console.log("app is fetching data...")
-    fetch('/library').then(
-      (response) => response.json()
-    ).then((value) => {
-      setSongs(value)
-      console.log("songs = ")
-      console.log(songs)
-      console.log("\n")
-    });
+    getLibrary(songs, setSongs)
   }, [refresh] );
   React.useEffect(() => {
     if(uid !== ""){
       console.log("uid = " + uid)
-      fetch('/userPlaylists/'+uid).then(
-        (response) => response.json()
-      ).then((value) => {
-        setPlaylists(value)
-      });
+      getUserPlayLists(uid, setPlaylists)
     } else {
       console.log("logged out")
     }
@@ -259,7 +219,26 @@ function App() {
   const editPlaylist = () => {
     setPage(Pages.EditPlaylist);
   }
-
+  
+  if(songs === null || songs.length === 0){ 
+    return <ChakraProvider theme={theme}>
+        <div className="App">
+          <Flex>
+            <Flex id="pagecontent"
+              w={'calc(100vw - '+16+'px)'}
+              h={'calc(100vh - '+0+'px)'}
+              position='relative'
+              overflow='hidden'
+              left='0'
+              p='0'
+              m='0'
+            >
+              <SongAdder refresh={refresh} setRefresh={setRefresh}/>
+            </Flex>
+          </Flex>
+        </div>
+      </ChakraProvider>;      
+  }
   /*
    * I added this conditional because I don't want to load the app unless the list of songs is loaded from the db. 
    */
@@ -275,25 +254,7 @@ function App() {
     </ChakraProvider>
     return loadingScreen;      
   }
-  // if(songs.length == 0){ 
-  //   return <ChakraProvider theme={theme}>
-  //       <div className="App">
-  //         <Flex>
-  //           <Flex id="pagecontent"
-  //             w={'calc(100vw - '+16+'px)'}
-  //             h={'calc(100vh - '+0+'px)'}
-  //             position='relative'
-  //             overflow='hidden'
-  //             left='0'
-  //             p='0'
-  //             m='0'
-  //           >
-  //             <SongAdder refresh={refresh} setRefresh={setRefresh}/>
-  //           </Flex>
-  //         </Flex>
-  //       </div>
-  //     </ChakraProvider>;      
-  // }
+
 
   let focusedPage;
   switch(page) {

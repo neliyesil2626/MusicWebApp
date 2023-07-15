@@ -4,8 +4,9 @@ import bodyParser from 'body-parser';
 import { MongoClient, ObjectId } from 'mongodb';
 import { Readable} from 'stream';
 import multer from 'multer';
+import cors from 'cors';
 
-const MONGO_URL = 'mongodb://127.0.0.1:27017';
+const MONGO_URL = 'mongodb://mongo:27017';
 const MONGO_DATABASE = "demo"; // we're using the default test database
 const MONGO_LIBRARY = "demolibrary";
 const MONGO_PLAYLISTS = "playlists";
@@ -269,6 +270,11 @@ const routes = [
         path: '/addsong',
         handler: async (req, res) => {
             const { name, artist, album, duration, objectID} = req.body;
+            res.set({
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin' : '*',
+                'Access-Control-Allow-Credentials' : true
+            });
             await addSong(name, artist, album, duration, objectID);
             res.status(200).json({ status: "ok"});
         },
@@ -277,6 +283,11 @@ const routes = [
         method: 'post',
         path: '/uploadsong',
         handler: async (req, res) => {
+            res.set({
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin' : '*',
+                'Access-Control-Allow-Credentials' : true
+            });
             await uploadSong(req, res);
         },
     },
@@ -358,6 +369,7 @@ const routes = [
 
 const BACKEND_PORT = 8000;
 const app = express();
+app.use(cors({ origin: true }));
 app.use(bodyParser.json());
 
 // setup the routes
