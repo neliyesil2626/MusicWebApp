@@ -1,5 +1,4 @@
 import React,{useState} from 'react';
-
 import rewindpng from './assets/Rewind.svg'; 
 import fastForwardpng from './assets/Fast Forward.svg';
 import playpng from './assets/Play.svg';
@@ -10,16 +9,11 @@ import queuepng from './assets/QueueSong.svg';
 import volumepng from './assets/volume control.svg';
 import {URL} from './DatabaseAccess';
 
-import { HStack, Box, Text, VStack, 
-         Center, Image, Spacer, Flex, 
-         Slider, SliderTrack, SliderFilledTrack, 
-         SliderThumb, Icon, useSlider,
-         Menu, MenuButton, MenuList, MenuGroup,
-         Input, CloseButton, Button,
-
+import { HStack, Box, Text, Center, Image, Spacer, Flex, 
+         Menu, MenuButton, MenuList, MenuGroup, CloseButton
        } from '@chakra-ui/react'
 import { COLOR } from './ChakraTheme';
-import LoopIcon from './assets/LoopSong';
+import { VolumeSlider } from './VolumeSlider';
 const BUTTON_SIZE = 40;
 const PROGRESS_WIDTH = 500; //width of the progress bar in px
 
@@ -82,6 +76,7 @@ const Player = (song) => {
     const [volumeBar, setVolumeBar] = useState(0)
     let loopFilter = (song.loopPlay) ? 'none' : 'grayscale()'
     let shuffleFilter = (song.shufflePlay) ? 'none' : 'grayscale()'
+    let initVolume = (isNaN(audio.volume)) ? (100) : (audio.volume * 100)
 
     document.body.onmousedown = () => { // if the element clicked isn't the volume bar, hide the volume bar
         setVolumeBar(0)
@@ -165,6 +160,10 @@ const Player = (song) => {
         audio.volume = 0.0
       }
     }
+    const updateVolume = (percent) => {
+      audio.volume = (percent/100)
+      setVolume(audio.volume)
+    }
 
     return (
       <Box
@@ -233,38 +232,13 @@ const Player = (song) => {
             <Flex position='absolute' pl={BUTTON_SIZE/2+'px'}
               
             >
-              <Slider
-                defaultValue={audio.volume * 100}
-                onChange={(percent)=> {
-                  audio.volume = (percent/100)
-                  setVolume(audio.volume)
-                }}
-                id='volume-container' 
-                bg='transparent'
-                w={volumeBar+'rem'}
-                h='20px' borderRadius='3px' size='lg'
-                verticalAlign='center'
-                _hover={{cursor: 'pointer'}}
-                p='0'
-                ml='5px'
-                
-              >
-                
-              <SliderTrack id='volume-track' bg={COLOR.bgHover} h='7px' borderRadius='full' >
-                <SliderFilledTrack bg={COLOR.pink} h='7px'/>
-              </SliderTrack>
-              <SliderThumb 
-                id='volume-thumb'
-                dragable='true' 
-                h='12px' w='12px' bg='transparent' 
-                _hover={{bg:COLOR.pink}}
-                _active={{bg:COLOR.pink, border:'0'}}
-                _focus={{outline:'0 !important'}}
-                
+              <VolumeSlider
+                initVolume={initVolume}
+                updateVolume={updateVolume}
+                volumeBar={volumeBar}
               />
-            </Slider>
+            </Flex>
           </Flex>
-        </Flex>
           
         </HStack></Center>
         

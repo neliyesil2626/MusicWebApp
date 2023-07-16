@@ -1,4 +1,4 @@
-import { Text, Center, Heading, Button, VStack, Input, Image, Divider, Flex} from '@chakra-ui/react';
+import { Text, Heading, VStack, Image, Divider} from '@chakra-ui/react';
 import { COLOR } from './ChakraTheme';
 import logo from './assets/logo.svg'
 

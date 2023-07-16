@@ -6,7 +6,7 @@ import Library from './Library.js';
 import LogInSignUp from './LogInSignUp.js';
 import {shuffle} from './Shuffle.js';
 import {theme, COLOR} from './ChakraTheme.js';
-import React,{useState, useEffect} from 'react';
+import React,{useState} from 'react';
 import { ChakraProvider, Flex, Button, Spinner} from '@chakra-ui/react';
 import CreatePlaylist from './CreatePlaylist.js';
 import CreatePlaylistNotLoggedIn from './CreatePlaylistNotLoggedIn.js'
