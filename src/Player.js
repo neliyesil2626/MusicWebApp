@@ -234,7 +234,7 @@ const Player = (song) => {
             >
               <VolumeSlider
                 initVolume={initVolume}
-                updateVolume={updateVolume}
+                updateVolume={() => {updateVolume()}}
                 volumeBar={volumeBar}
               />
             </Flex>

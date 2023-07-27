@@ -6,7 +6,9 @@ import { Readable} from 'stream';
 import multer from 'multer';
 import cors from 'cors';
 
-const MONGO_URL = 'mongodb://mongo:27017';
+
+const dockermode = true; //this is used to determine if using docker containers or not.
+const MONGO_URL = dockermode? 'mongodb://mongo:27017' : 'mongodb://localhost:27017';
 const MONGO_DATABASE = "demo"; // we're using the default test database
 const MONGO_LIBRARY = "demolibrary";
 const MONGO_PLAYLISTS = "playlists";
@@ -32,13 +34,6 @@ const getConnection = async () => {
         }
     }
     return dbClient.db(MONGO_DATABASE);
-}
-
-// returns every song in  the database
-const getAllSongs = async () => {
-    const database = await getConnection();
-    const values = await database.collection("fs.files").find({}).toArray();
-    return values;
 }
 
 const getUserPlayLists = async (uID) => {

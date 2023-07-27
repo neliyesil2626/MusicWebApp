@@ -56,6 +56,8 @@ function App() {
   const [queue, setQueue] = useState([])
   const [showQueue, setShowQueue] = useState(false);
 
+  const setUpMode = false; //if there are no songs in the database, set this condition to TRUE
+
   const [app, setApp] = useState()
   const [auth, setAuth] = useState()
   if(auth === null || auth === undefined){
@@ -220,7 +222,7 @@ function App() {
     setPage(Pages.EditPlaylist);
   }
   
-  if(songs === null || songs.length === 0){ 
+  if(setUpMode && (songs === null || songs.length === 0)){ 
     return <ChakraProvider theme={theme}>
         <div className="App">
           <Flex>
