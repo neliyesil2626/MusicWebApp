@@ -56,7 +56,7 @@ function App() {
   const [queue, setQueue] = useState([])
   const [showQueue, setShowQueue] = useState(false);
 
-  const setUpMode = false; //if there are no songs in the database, set this condition to TRUE
+  const setUpMode = true; //if there are no songs in the database, set this condition to TRUE
 
   const [app, setApp] = useState()
   const [auth, setAuth] = useState()
